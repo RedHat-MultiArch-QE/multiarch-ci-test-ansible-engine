@@ -113,11 +113,11 @@ TestUtils.runParallelMultiArchTest(
 
     emailext(
       subject: "${env.JOB_NAME} - Build #${currentBuild.number} - ${currentBuild.currentResult}",
-      body:"${env.JOB_NAME} - Build #${currentBuild.number} - ${currentBuild.currentResult}\n\n" + errorMessages,
+      body:"Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nURL:$BUILD_URL\nErrors:" + errorMessages,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
       to: 'jpoulin',
-      attachmentsPattern: 'artifacts/**/*.*'
+      attachmentsPattern: 'artifacts/rhel-system-roles/*.*'
     )
   }
 )
