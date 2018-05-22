@@ -65,10 +65,9 @@ library(
 )
 
 List arches = params.ARCHES.tokenize(',')
+def errorMessages = ''
 def config = TestUtils.getProvisioningConfig(this)
 config.installRhpkg = true
-
-def errorMessages = ''
 
 TestUtils.runParallelMultiArchTest(
   this,
