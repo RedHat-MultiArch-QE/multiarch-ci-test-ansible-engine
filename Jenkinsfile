@@ -114,7 +114,7 @@ TestUtils.runParallelMultiArchTest(
     }
 
     def emailBody = "Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nURL: $BUILD_URL"
-    if (errorMessages) emailBody += "\nErrors: " + errorMessages"
+    if (errorMessages) emailBody += "\nErrors: " + errorMessages
  
     emailext(
       subject: "${env.JOB_NAME} - Build #${currentBuild.number} - ${currentBuild.currentResult}",
