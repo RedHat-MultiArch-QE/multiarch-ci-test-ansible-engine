@@ -107,8 +107,8 @@ TestUtils.runParallelMultiArchTest(
   {
     try {
       sh "mkdir -p artifacts"
-      unarchive(mapping: ['tests/scripts/rhel-system-roles/artifacts/*.*' : 'artifacts/.'])
-      sh "ls artifacts"
+      unarchive(mapping: ['**/*.*' : 'artifacts/.'])
+      sh "ls artifacts; ls artifacts/tests"
     } catch (e) {
       errorMessages += "Exception ${e} occured while unarchiving artifacts\n"
     }
@@ -122,7 +122,7 @@ TestUtils.runParallelMultiArchTest(
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
       to: 'jpoulin',
-      attachmentsPattern: 'artifacts/*.*'
+      attachmentsPattern: 'artifacts/tests/scripts/rhel-system-roles/artifacts/*.*'
     )
   }
 )
