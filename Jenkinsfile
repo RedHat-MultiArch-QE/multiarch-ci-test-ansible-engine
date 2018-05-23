@@ -5,7 +5,7 @@ properties(
         [
           $class: 'CIBuildTrigger',
           checks: [],
-          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.4ed73c82-6707-4f06-9ad5-b4af7d5116d8.VirtualTopic.qe.ci.>"],
+          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.3efb0ce1-0146-419e-b94a-bf94ec887e62.VirtualTopic.qe.ci.>"],
           providerName: 'Red Hat UMB',
           selector: 'name = \'ansible\' AND CI_TYPE = \'brew-tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\''
         ]
@@ -19,12 +19,12 @@ properties(
           name: 'ARCHES'
         ),
         string(
-          defaultValue: 'https://github.com/jaypoulz/multiarch-ci-libraries',
+          defaultValue: 'https://github.com/RedHat-MultiArch-QE/multiarch-ci-libraries',
           description: 'Repo for shared libraries.',
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'dev-v1.0',
+          defaultValue: 'v1.0',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
@@ -120,7 +120,7 @@ TestUtils.runParallelMultiArchTest(
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
-      to: 'jpoulin',
+      to: 'jpoulin; mclay',
       attachmentsPattern: 'artifacts/tests/scripts/rhel-system-roles/artifacts/**/*.*'
     )
   }
