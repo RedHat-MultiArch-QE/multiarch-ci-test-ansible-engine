@@ -107,7 +107,8 @@ TestUtils.runParallelMultiArchTest(
   {
     try {
       sh "mkdir -p artifacts"
-      unarchive(mapping: ['**/*.*' : 'artifacts/.'])
+      unarchive(mapping: ['rhel-system-roles/*.*' : 'artifacts/.'])
+      sh "ls artifacts"
     } catch (e) {
     }
 
@@ -117,7 +118,7 @@ TestUtils.runParallelMultiArchTest(
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
       to: 'jpoulin',
-      attachmentsPattern: 'artifacts/rhel-system-roles/*.*'
+      attachmentsPattern: 'artifacts/**/*.*'
     )
   }
 )
