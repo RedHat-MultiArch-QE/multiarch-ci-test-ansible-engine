@@ -5,9 +5,9 @@ properties(
         [
           $class: 'CIBuildTrigger',
           checks: [],
-          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.3efb0ce1-0146-419e-b94a-bf94ec887e62.VirtualTopic.qe.ci.>"],
+          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.3efb0ce1-0146-419e-b94a-bf94ec887e62.VirtualTopic.qe.brew.>"],
           providerName: 'Red Hat UMB',
-          selector: 'name = \'ansible\' AND CI_TYPE = \'brew-tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\''
+          selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\''
         ]
       ]
     ),
@@ -24,7 +24,7 @@ properties(
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'v1.0',
+          defaultValue: 'v1.2.0',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
