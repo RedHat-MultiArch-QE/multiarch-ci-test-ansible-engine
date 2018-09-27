@@ -5,7 +5,7 @@ properties(
         [
           $class: 'CIBuildTrigger',
           checks: [],
-          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.3efb0ce1-0146-419e-b94a-bf94ec887e62.VirtualTopic.qe.brew.>"],
+          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.3efb0ce1-0146-419e-b94a-bf94ec887e62.VirtualTopic.eng.brew.>"],
           providerName: 'Red Hat UMB',
           selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\''
         ]
