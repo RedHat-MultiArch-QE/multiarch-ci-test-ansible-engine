@@ -66,10 +66,10 @@ library(
 
 List arches = params.ARCHES.tokenize(',')
 def errorMessages = ''
-def config = TestUtils.getProvisioningConfig(this)
+def config = API.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 
-TestUtils.runParallelMultiArchTest(
+API.v1.runParallelMultiArchTest(
   this,
   arches,
   config,
