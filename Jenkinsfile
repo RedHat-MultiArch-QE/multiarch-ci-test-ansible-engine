@@ -24,7 +24,7 @@ properties(
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'v1.0',
+          defaultValue: 'v1.1',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
@@ -49,7 +49,7 @@ properties(
           name: 'CI_MESSAGE'
         ),
         string(
-          defaultValue: '16364269',
+          defaultValue: '18574111',
           description: 'Build task ID for which to run the pipeline',
           name: 'TASK_ID'
         )
@@ -85,6 +85,7 @@ TestUtils.runParallelMultiArchTest(
     }
 
     stage ('Run Test') {
+      sh('yum reinstall --disable-repo 'epel' -y ansible')
       runTests(config, host)
     }
 
@@ -120,7 +121,7 @@ TestUtils.runParallelMultiArchTest(
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
-      to: 'jpoulin; mclay',
+      to: 'jpoulin', //'jpoulin; mclay',
       attachmentsPattern: 'artifacts/tests/scripts/rhel-system-roles/artifacts/**/*.*'
     )
   }
