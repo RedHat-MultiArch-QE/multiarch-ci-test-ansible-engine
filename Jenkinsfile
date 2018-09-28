@@ -85,7 +85,6 @@ TestUtils.runParallelMultiArchTest(
     }
 
     stage ('Run Test') {
-      sh('yum reinstall --disable-repo "epel" -y ansible')
       runTests(config, host)
     }
 
