@@ -66,10 +66,10 @@ library(
 
 List arches = params.ARCHES.tokenize(',')
 def errorMessages = ''
-def config = API.v1.getProvisioningConfig(this)
+def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 
-API.v1.runParallelMultiArchTest(
+MAQEAPI.v1.runParallelMultiArchTest(
   this,
   arches,
   config,
