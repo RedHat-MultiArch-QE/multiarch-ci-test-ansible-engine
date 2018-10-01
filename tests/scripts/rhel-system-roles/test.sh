@@ -1,6 +1,11 @@
 #!/bin/bash
 #
 # Attempts to clone down the test package and run it
+
+# Ensure Ansible gets installed from task repo
+sudo yum remove ansible -y &&
+sudo yum-config-manager --disable epel
+
 cd "$(dirname ${BASH_SOURCE[0]})"
 workdir=$(pwd)
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
