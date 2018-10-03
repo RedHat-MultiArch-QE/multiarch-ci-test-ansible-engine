@@ -19,12 +19,12 @@ properties(
           name: 'ARCHES'
         ),
         string(
-          defaultValue: 'https://github.com/RedHat-MultiArch-QE/multiarch-ci-libraries',
+          defaultValue: 'https://github.com/jaypoulz/multiarch-ci-libraries',
           description: 'Repo for shared libraries.',
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'v1.2.0',
+          defaultValue: 'dev-v1.2.0',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
@@ -86,24 +86,16 @@ MAQEAPI.v1.runParallelMultiArchTest(
     /* TEST BODY                                             */
     /* @param host               Provisioned host details.   */
     /*********************************************************/
-    println(config.runOnSlave)
-    println(config.mode)
     installBrewPkgs(params)
 
-    println(config.runOnSlave)
-    println(config.mode)
     stage ('Download Test Files') {
       downloadTests()
     }
 
-    println(config.runOnSlave)
-    println(config.mode)
     stage ('Run Test') {
       runTests(config, host)
     }
 
-    println(config.runOnSlave)
-    println(config.mode)
     stage ('Archive Test Output') {
       archiveOutput()
     }
