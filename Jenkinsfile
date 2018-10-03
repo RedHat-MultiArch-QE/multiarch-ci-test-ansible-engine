@@ -74,6 +74,9 @@ def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 
+println(config.runOnSlave)
+println(config.mode)
+
 MAQEAPI.v1.runParallelMultiArchTest(
   this,
   arches,
@@ -83,16 +86,24 @@ MAQEAPI.v1.runParallelMultiArchTest(
     /* TEST BODY                                             */
     /* @param host               Provisioned host details.   */
     /*********************************************************/
+    println(config.runOnSlave)
+    println(config.mode)
     installBrewPkgs(params)
 
+    println(config.runOnSlave)
+    println(config.mode)
     stage ('Download Test Files') {
       downloadTests()
     }
 
+    println(config.runOnSlave)
+    println(config.mode)
     stage ('Run Test') {
       runTests(config, host)
     }
 
+    println(config.runOnSlave)
+    println(config.mode)
     stage ('Archive Test Output') {
       archiveOutput()
     }
