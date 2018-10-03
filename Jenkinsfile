@@ -5,7 +5,7 @@ properties(
         [
           $class: 'CIBuildTrigger',
           checks: [],
-          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.3efb0ce1-0146-419e-b94a-bf94ec887e62.VirtualTopic.eng.brew.>"],
+          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.7b1f1e65-fc49-4d3c-be28-2a6528a814fc.VirtualTopic.eng.brew.>"],
           providerName: 'Red Hat UMB',
           selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\''
         ]
@@ -52,6 +52,11 @@ properties(
           defaultValue: '18574111',
           description: 'Build task ID for which to run the pipeline',
           name: 'TASK_ID'
+        ),
+        string(
+          defaultValue: 'jpoulin',
+          description: 'Semi-colon delimited list of email notification recipients.',
+          name: 'EMAIL_SUBSCRIBERS'
         )
       ]
     )
@@ -120,7 +125,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
-      to: 'jpoulin; mclay',
+      to: "${params.EMAIL_SUBSCRIBERS}",
       attachmentsPattern: 'artifacts/tests/scripts/rhel-system-roles/artifacts/**/*.*'
     )
   }
