@@ -104,6 +104,10 @@ MAQEAPI.v1.runParallelMultiArchTest(
     /*****************************************************************/
   },
   { Exception exception, def host ->
+    stage ('Archive Failed Test Output') {
+      archiveOutput()
+    }
+    
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
     if (host.arch.equals("x86_64") || host.arch.equals("ppc64le")) {
