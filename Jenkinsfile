@@ -5,7 +5,7 @@ properties(
         [
           $class: 'CIBuildTrigger',
           checks: [],
-          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.7b1f1e65-fc49-4d3c-be28-2a6528a814fc.VirtualTopic.eng.brew.>"],
+          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.e1899f02-c822-11e8-a8d5-f2801f1b9fd1.VirtualTopic.eng.brew.>"],
           providerName: 'Red Hat UMB',
           selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\''
         ]
@@ -19,12 +19,12 @@ properties(
           name: 'ARCHES'
         ),
         string(
-          defaultValue: 'https://github.com/jaypoulz/multiarch-ci-libraries',
+          defaultValue: 'https://github.com/redhat-multiarch-qe/multiarch-ci-libraries',
           description: 'Repo for shared libraries.',
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'dev-v1.2.0',
+          defaultValue: 'v1.2.0',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
@@ -54,7 +54,7 @@ properties(
           name: 'TASK_ID'
         ),
         string(
-          defaultValue: 'jpoulin',
+          defaultValue: 'jpoulin; mclay',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'EMAIL_SUBSCRIBERS'
         )
