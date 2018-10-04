@@ -73,9 +73,7 @@ List arches = params.ARCHES.tokenize(',')
 def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
-
-println(config.runOnSlave)
-println(config.mode)
+config.mode = 'JNLP'
 
 MAQEAPI.v1.runParallelMultiArchTest(
   this,
