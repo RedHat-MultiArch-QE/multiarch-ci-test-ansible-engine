@@ -84,7 +84,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
     /* TEST BODY                                             */
     /* @param host               Provisioned host details.   */
     /*********************************************************/
-    installBrewPkgs(params, 'sudo')
+    installBrewPkgs(params, config.runOnSlave)
 
     stage ('Download Test Files') {
       downloadTests()
