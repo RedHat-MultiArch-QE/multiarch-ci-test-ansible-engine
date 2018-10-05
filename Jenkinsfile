@@ -5,7 +5,7 @@ properties(
         [
           $class: 'CIBuildTrigger',
           checks: [],
-          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.3efb0ce1-0146-419e-b94a-bf94ec887e62.VirtualTopic.eng.brew.>"],
+          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.e1899f02-c822-11e8-a8d5-f2801f1b9fd1.VirtualTopic.eng.brew.>"],
           providerName: 'Red Hat UMB',
           selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\''
         ]
@@ -19,7 +19,7 @@ properties(
           name: 'ARCHES'
         ),
         string(
-          defaultValue: 'https://github.com/RedHat-MultiArch-QE/multiarch-ci-libraries',
+          defaultValue: 'https://github.com/redhat-multiarch-qe/multiarch-ci-libraries',
           description: 'Repo for shared libraries.',
           name: 'LIBRARIES_REPO'
         ),
@@ -52,6 +52,11 @@ properties(
           defaultValue: '18574111',
           description: 'Build task ID for which to run the pipeline',
           name: 'TASK_ID'
+        ),
+        string(
+          defaultValue: 'jpoulin; mclay',
+          description: 'Semi-colon delimited list of email notification recipients.',
+          name: 'EMAIL_SUBSCRIBERS'
         )
       ]
     )
@@ -68,6 +73,7 @@ List arches = params.ARCHES.tokenize(',')
 def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
+config.mode = 'JNLP'
 
 MAQEAPI.v1.runParallelMultiArchTest(
   this,
@@ -78,7 +84,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
     /* TEST BODY                                             */
     /* @param host               Provisioned host details.   */
     /*********************************************************/
-    installBrewPkgs(params)
+    installBrewPkgs(params, config.runOnSlave)
 
     stage ('Download Test Files') {
       downloadTests()
@@ -98,6 +104,10 @@ MAQEAPI.v1.runParallelMultiArchTest(
     /*****************************************************************/
   },
   { Exception exception, def host ->
+    stage ('Archive Failed Test Output') {
+      archiveOutput()
+    }
+    
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
     if (host.arch.equals("x86_64") || host.arch.equals("ppc64le")) {
@@ -120,7 +130,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
-      to: 'jpoulin; mclay',
+      to: "${params.EMAIL_SUBSCRIBERS}",
       attachmentsPattern: 'artifacts/tests/scripts/rhel-system-roles/artifacts/**/*.*'
     )
   }
