@@ -114,7 +114,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
     stage ('Archive Failed Test Output') {
       archiveOutput()
     }
-
+    
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
     if (host.arch.equals("x86_64") || host.arch.equals("ppc64le")) {
@@ -131,7 +131,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
 
     def emailBody = "Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nURL: $BUILD_URL"
     if (errorMessages) emailBody += "\nErrors: " + errorMessages
-
+ 
     emailext(
       subject: "${env.JOB_NAME} - Build #${currentBuild.number} - ${currentBuild.currentResult}",
       body: emailBody,
