@@ -4,10 +4,15 @@ properties(
       [
         [
           $class: 'CIBuildTrigger',
-          checks: [],
-          overrides: [topic: "Consumer.rh-jenkins-ci-plugin.e1899f02-c822-11e8-a8d5-f2801f1b9fd1.VirtualTopic.eng.brew.>"],
-          providerName: 'Red Hat UMB',
-          selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\''
+          noSquash: true,
+          providerData:
+            [
+            $class: 'ActiveMQSubscriberProviderData',
+            name: 'Red Hat UMB',
+            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.e1899f02-c822-11e8-a8d5-f2801f1b9fd1.VirtualTopic.eng.brew.>'],
+            selector: 'type = \'Tag\' AND name = \'ansible\' AND  tag LIKE \'ansible-%-rhel-%-candidate\'',
+            timeout: null
+          ]
         ]
       ]
     ),
@@ -109,7 +114,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
     stage ('Archive Failed Test Output') {
       archiveOutput()
     }
-    
+
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
     if (host.arch.equals("x86_64") || host.arch.equals("ppc64le")) {
@@ -126,7 +131,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
 
     def emailBody = "Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nURL: $BUILD_URL"
     if (errorMessages) emailBody += "\nErrors: " + errorMessages
- 
+
     emailext(
       subject: "${env.JOB_NAME} - Build #${currentBuild.number} - ${currentBuild.currentResult}",
       body: emailBody,
