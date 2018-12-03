@@ -10,7 +10,7 @@ properties(
             $class: 'ActiveMQSubscriberProviderData',
             name: 'Red Hat UMB',
             overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.e1899f02-c822-11e8-a8d5-f2801f1b9fd1.VirtualTopic.eng.brew.>'],
-            selector: 'type = \'Tag\' AND name = \'ansible\' AND  tag LIKE \'ansible-%-rhel-%-candidate\'',
+            selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\'',
             timeout: null
           ]
         ]
