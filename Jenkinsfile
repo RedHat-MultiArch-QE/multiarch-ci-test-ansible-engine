@@ -137,7 +137,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
       nvr = json['build'].nvr
     } else {
       sh('yum install -y koji brewkoji')
-      nvr = sh(script:'brew taskinfo ${params.TASK_ID} | grep "Build:" | cut -d" " -f2', returnStdout:true)
+      nvr = sh(script:"brew taskinfo ${params.TASK_ID} | grep 'Build:' | cut -d' ' -f2", returnStdout:true)
     }
 
     def emailBody = "Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nNVR: ${nvr}\nURL: $BUILD_URL"
