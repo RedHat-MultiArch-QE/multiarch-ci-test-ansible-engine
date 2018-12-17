@@ -136,7 +136,7 @@ MAQEAPI.v1.runParallelMultiArchTest(
       Map json = readJSON(file:CI_MESSAGE_FILE)
       nvr = json['build'].nvr
     } else {
-      sh('sudo yum install -y koji brewkoji')
+      sh('yum install -y koji brewkoji')
       nvr = sh(script:'brew taskinfo ${params.TASK_ID} | grep "Build:" | cut -d" " -f2', returnStdout:true)
     }
 
