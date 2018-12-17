@@ -9,7 +9,7 @@ properties(
             [
             $class: 'ActiveMQSubscriberProviderData',
             name: 'Red Hat UMB',
-            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.6779ffa0-a421-4ded-8412-08ccfb493333.VirtualTopic.eng.brew.>'],
+            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.9d100767-2ffc-462e-abff-03bb5dfeeb22.VirtualTopic.eng.brew.>'],
             selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\'',
             timeout: null
           ]
@@ -140,11 +140,11 @@ MAQEAPI.v1.runParallelMultiArchTest(
       nvr = sh(script:'brew taskinfo ${params.TASK_ID} | grep "Build:" | cut -d" " -f2', returnStdout:true)
     }
 
-    def emailBody = "Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nURL: $BUILD_URL"
+    def emailBody = "Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nNVR: ${nvr}\nURL: $BUILD_URL"
     if (errorMessages) emailBody += "\nErrors: " + errorMessages
 
     emailext(
-      subject: "${env.JOB_NAME} (#${currentBuild.number}) - ${nvr} - ${currentBuild.currentResult}",
+      subject: "${env.JOB_NAME} (#${currentBuild.number}) - ${nvr ? nvr + ' - ': ''}${currentBuild.currentResult}",
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
