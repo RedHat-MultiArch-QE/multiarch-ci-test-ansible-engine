@@ -136,7 +136,11 @@ MAQEAPI.v1.runParallelMultiArchTest(
       Map json = readJSON(file:CI_MESSAGE_FILE)
       nvr = json['build'].nvr
     } else {
-      sh('yum install -y koji brewkoji')
+      sh('''
+          yum install -y yum-utils;
+          yum-config-manager --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/rcm-tools-rhel-7-server.repo;
+          yum install -y koji brewkoji
+      ''')
       nvr = sh(script:"brew taskinfo ${params.TASK_ID} | grep 'Build:' | cut -d' ' -f2", returnStdout:true)
     }
 
