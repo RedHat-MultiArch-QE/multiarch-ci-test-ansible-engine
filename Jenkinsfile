@@ -9,8 +9,8 @@ properties(
             [
             $class: 'ActiveMQSubscriberProviderData',
             name: 'Red Hat UMB',
-            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.f88e907e-04c5-11e9-8eb2-f2801f1b9fd1.VirtualTopic.eng.brew.>'],
-            selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-7-candidate\'',
+            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.a3d96a6e-b99e-43c1-b11d-a996e18a1b2d.VirtualTopic.eng.brew.>'],
+            selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\'',
             timeout: null
           ]
         ]
@@ -19,19 +19,19 @@ properties(
     parameters(
       [
         [$class: 'ValidatingStringParameterDefinition',
-         defaultValue: 'x86_64,ppc64le',
+         defaultValue: 'x86_64',
          description: 'A comma separated list of architectures to run the test on. Valid values include [x86_64, ppc64le, aarch64, s390x].',
          failedValidationMessage: 'Invalid architecture. Valid values are [x86_64, ppc64le, aarch64, s390x].',
          name: 'ARCHES',
          regex: '^(?:x86_64|ppc64le|aarch64|s390x)(?:,\\s*(?:x86_64|ppc64le|aarch64|s390x))*$'
         ],
         string(
-          defaultValue: 'https://github.com/redhat-multiarch-qe/multiarch-ci-libraries',
+          defaultValue: 'https://github.com/jaypoulz/multiarch-ci-libraries',
           description: 'Repo for shared libraries.',
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'v1.2.1',
+          defaultValue: 'dev-v1.2.2',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
@@ -56,12 +56,22 @@ properties(
           name: 'CI_MESSAGE'
         ),
         string(
-          defaultValue: '18574111',
+          defaultValue: '19572674',
           description: 'Build task ID for which to run the pipeline',
           name: 'TASK_ID'
         ),
         string(
-          defaultValue: 'jpoulin; mclay',
+          defaultValue: 'RHEL-ALT-7.5',
+          description: 'RHEL 7 distribution.',
+          name: 'RHEL7_DISTRO'
+        ),
+        string(
+          defaultValue: 'RHEL-8.0.0-20190129.1',
+          description: 'RHEL 8 distribution.',
+          name: 'RHEL8_DISTRO'
+        ),
+        string(
+          defaultValue: 'jpoulin',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'EMAIL_SUBSCRIBERS'
         )
@@ -76,15 +86,83 @@ library(
   retriever: modernSCM([$class: 'GitSCMSource',remote: "${params.LIBRARIES_REPO}"])
 )
 
-List arches = params.ARCHES.tokenize(',')
+// MACIT configuration
 def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
-config.mode = 'JNLP'
+//config.mode = 'JNLP'
 
-MAQEAPI.v1.runParallelMultiArchTest(
+// Get build information
+Map message = [:]
+String taskId = ''
+String nvr = ''
+
+// Required host information
+List arches = params.ARCHES.tokenize(',')
+String os = ''
+String distro = ''
+String variant = ''
+
+// Lookup the build information
+MAQEAPI.v1.testWrapper(this, config) {
+  node ("provisioner-${config.version}"){
+    // Message
+    message = getCIMessage(params.CI_MESSAGE)
+
+    // Task ID
+    taskId = message && message.build && message.build.task_id ?: params.TASK_ID
+    if (!taskId) {
+      error("Invalid brew task ID for CI_MESSAGE: ${params.CI_MESSAGE} and TASK_ID: ${params.TASK_ID}.")
+    }
+
+    // NVR
+    nvr = sh(script:"brew taskinfo ${taskId} | grep 'Build:' | cut -d' ' -f2", returnStdout:true)
+    if (!nvr) {
+      error("Invalid nvr: ${nvr}.")
+    }
+
+    // OS
+    os = sh(
+      script: """
+        brew buildinfo \
+            \$(brew taskinfo ${taskId} | grep 'Build:' | cut -d '(' -f 2 | cut -d ')' -f 1) | \
+            grep 'Volume:' | cut -d ' ' -f 2
+      """,
+      returnStdout: true
+    ).trim()
+    if (!os || !(['rhel-7', 'rhel-8'].contains(os))) {
+      error("Invalid OS version: ${os}.")
+    }
+
+    // Distro
+    distro = (os == 'rhel-8') ? params.RHEL8_DISTRO : params.RHEL7_DISTRO
+    if (!distro) {
+      error("Invalid distro: ${distro}.")
+    }
+
+    // Variant
+    variant = (os == 'rhel-8') ? 'BaseOS' : 'Server'
+    if (!variant) {
+      error("Invalid variant: ${variant}.")
+    }
+  }
+}
+
+def targetHosts = []
+for (String arch in arches) {
+  def targetHost = MAQEAPI.v1.newTargetHost()
+  targetHost.arch = arch
+  targetHost.distro = distro
+  targetHost.variant = variant
+  if (os == 'rhel-8') {
+      targetHost.inventoryVars = [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
+  }
+  targetHosts.push(targetHost)
+}
+
+MAQEAPI.v1.runTest(
   this,
-  arches,
+  targetHosts,
   config,
   { host ->
     /*********************************************************/
@@ -127,21 +205,6 @@ MAQEAPI.v1.runParallelMultiArchTest(
       unarchive(mapping: ['**/*.*' : 'artifacts/.'])
     } catch (e) {
       errorMessages += "Exception ${e} occured while unarchiving artifacts\n"
-    }
-
-    String nvr = ''
-    if (params.CI_MESSAGE) {
-      final String CI_MESSAGE_FILE = 'message.json'
-      writeFile(file:CI_MESSAGE_FILE, text:params.CI_MESSAGE)
-      Map json = readJSON(file:CI_MESSAGE_FILE)
-      nvr = json['build'].nvr
-    } else {
-      sh('''
-          yum install -y yum-utils;
-          yum-config-manager --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/rcm-tools-rhel-7-server.repo;
-          yum install -y koji brewkoji
-      ''')
-      nvr = sh(script:"brew taskinfo ${params.TASK_ID} | grep 'Build:' | cut -d' ' -f2", returnStdout:true)
     }
 
     def emailBody = "Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nNVR: ${nvr}\nURL: $BUILD_URL"
