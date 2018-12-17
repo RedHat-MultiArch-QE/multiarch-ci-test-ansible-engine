@@ -61,7 +61,7 @@ properties(
           name: 'TASK_ID'
         ),
         string(
-          defaultValue: 'jpoulin; mclay',
+          defaultValue: 'jpoulin',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'EMAIL_SUBSCRIBERS'
         )
@@ -129,11 +129,22 @@ MAQEAPI.v1.runParallelMultiArchTest(
       errorMessages += "Exception ${e} occured while unarchiving artifacts\n"
     }
 
+    String nvr = ''
+    if (params.CI_MESSAGE) {
+      final String CI_MESSAGE_FILE = 'message.json'
+      writeFile(file:CI_MESSAGE_FILE, text:params.CI_MESSAGE)
+      Map json = readJSON(file:CI_MESSAGE_FILE)
+      nvr = json['build'].nvr
+    } else {
+      sh('sudo yum install -y koji brewkoji')
+      nvr = sh(script:'brew taskinfo ${params.TASK_ID} | grep "Build:" | cut -d" " -f2', returnStdout:true)
+    }
+
     def emailBody = "Results for ${env.JOB_NAME} - Build #${currentBuild.number}\n\nResult: ${currentBuild.currentResult}\nURL: $BUILD_URL"
     if (errorMessages) emailBody += "\nErrors: " + errorMessages
 
     emailext(
-      subject: "${env.JOB_NAME} - Build #${currentBuild.number} - ${currentBuild.currentResult}",
+      subject: "${env.JOB_NAME} (#${currentBuild.number}) - ${nvr} - ${currentBuild.currentResult}",
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
