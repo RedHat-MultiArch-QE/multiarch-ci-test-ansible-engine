@@ -3,8 +3,8 @@
 # Attempts to clone down the test package and run it
 
 # Ensure Ansible gets installed from task repo
-sudo yum remove ansible -y &&
-sudo yum-config-manager --save --setopt epel.exclude=ansible* &&
+sudo yum remove ansible -y 
+sudo yum-config-manager --save --setopt epel.exclude=ansible* 
 sudo yum-config-manager --save --setopt ansible.exclude=ansible*
 
 cd "$(dirname ${BASH_SOURCE[0]})"
