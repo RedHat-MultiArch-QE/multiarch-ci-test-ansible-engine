@@ -9,7 +9,7 @@ properties(
             [
             $class: 'ActiveMQSubscriberProviderData',
             name: 'Red Hat UMB',
-            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.9d100767-2ffc-462e-abff-03bb5dfeeb22.VirtualTopic.eng.brew.>'],
+            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.f88e907e-04c5-11e9-8eb2-f2801f1b9fd1.VirtualTopic.eng.brew.>'],
             selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-7-candidate\'',
             timeout: null
           ]
@@ -61,7 +61,7 @@ properties(
           name: 'TASK_ID'
         ),
         string(
-          defaultValue: 'jpoulin',
+          defaultValue: 'jpoulin; mclay',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'EMAIL_SUBSCRIBERS'
         )
