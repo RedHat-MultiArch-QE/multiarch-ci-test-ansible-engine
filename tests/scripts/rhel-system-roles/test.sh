@@ -5,8 +5,7 @@
 # Ensure Ansible gets installed from task repo
 sudo yum remove ansible -y
 sudo yum install ansible -y --disablerepo epel
-sudo yum-config-manager --save --setopt exclude=ansible* 
-sudo yum-config-manager --save --setopt epel.exclude=ansible* 
+sudo yum-config-manager --save --setopt epel.exclude=ansible*
 
 cd "$(dirname ${BASH_SOURCE[0]})"
 workdir=$(pwd)
