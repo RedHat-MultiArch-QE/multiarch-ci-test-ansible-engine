@@ -19,19 +19,19 @@ properties(
     parameters(
       [
         [$class: 'ValidatingStringParameterDefinition',
-         defaultValue: 'x86_64',
+         defaultValue: 'x86_64,ppc64le',
          description: 'A comma separated list of architectures to run the test on. Valid values include [x86_64, ppc64le, aarch64, s390x].',
          failedValidationMessage: 'Invalid architecture. Valid values are [x86_64, ppc64le, aarch64, s390x].',
          name: 'ARCHES',
          regex: '^(?:x86_64|ppc64le|aarch64|s390x)(?:,\\s*(?:x86_64|ppc64le|aarch64|s390x))*$'
         ],
         string(
-          defaultValue: 'https://github.com/jaypoulz/multiarch-ci-libraries',
+          defaultValue: 'https://github.com/redhat-multiarch-qe/multiarch-ci-libraries',
           description: 'Repo for shared libraries.',
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'dev-v1.2.2',
+          defaultValue: 'v1.2.2',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
@@ -90,7 +90,6 @@ library(
 def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
-//config.mode = 'JNLP'
 
 // Get build information
 Map message = [:]
@@ -211,7 +210,7 @@ MAQEAPI.v1.runTest(
     if (errorMessages) emailBody += "\nErrors: " + errorMessages
 
     emailext(
-      subject: "${env.JOB_NAME} (#${currentBuild.number}) - ${nvr ? nvr + ' - ': ''}${currentBuild.currentResult}",
+      subject: "${nvr ? nvr + ' - ': ''}${currentBuild.currentResult} - ${env.JOB_NAME} (#${currentBuild.number})",
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
