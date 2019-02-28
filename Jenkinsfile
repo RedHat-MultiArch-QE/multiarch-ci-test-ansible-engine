@@ -178,20 +178,12 @@ MAQEAPI.v1.runTest(
       runTests(config, host)
     }
 
-    stage ('Archive Test Output') {
-      archiveOutput()
-    }
-
     /*****************************************************************/
     /* END TEST BODY                                                 */
     /* Do not edit beyond this point                                 */
     /*****************************************************************/
   },
   { Exception exception, def host ->
-    stage ('Archive Failed Test Output') {
-      archiveOutput()
-    }
-
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
     if (host.arch.equals("x86_64") || host.arch.equals("ppc64le")) {
