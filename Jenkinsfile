@@ -9,7 +9,7 @@ properties(
             [
             $class: 'ActiveMQSubscriberProviderData',
             name: 'Red Hat UMB',
-            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.a3d96a6e-b99e-43c1-b11d-a996e18a1b2d.VirtualTopic.eng.brew.>'],
+            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.f88e907e-04c5-11e9-8eb2-f2801f1b9fd1.VirtualTopic.eng.brew.>'],
             selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\'',
             timeout: null
           ]
@@ -56,7 +56,7 @@ properties(
           name: 'CI_MESSAGE'
         ),
         string(
-          defaultValue: '19572674',
+          defaultValue: '18574111',
           description: 'Build task ID for which to run the pipeline',
           name: 'TASK_ID'
         ),
@@ -71,7 +71,7 @@ properties(
           name: 'RHEL8_DISTRO'
         ),
         string(
-          defaultValue: 'jpoulin',
+          defaultValue: 'jpoulin; mclay',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'EMAIL_SUBSCRIBERS'
         )
