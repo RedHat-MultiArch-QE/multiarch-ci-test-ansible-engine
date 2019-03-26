@@ -71,7 +71,7 @@ properties(
           name: 'RHEL8_DISTRO'
         ),
         string(
-          defaultValue: 'jpoulin; mclay',
+          defaultValue: 'jpoulin; mclay; djez; pcahyna',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'EMAIL_SUBSCRIBERS'
         )
