@@ -9,7 +9,7 @@ properties(
             [
             $class: 'ActiveMQSubscriberProviderData',
             name: 'Red Hat UMB',
-            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.f88e907e-04c5-11e9-8eb2-f2801f1b9fd1.VirtualTopic.eng.brew.>'],
+            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.362b4d33-54cc-4d94-84af-ad1732e30928.VirtualTopic.eng.brew.>'],
             selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\'',
             timeout: null
           ]
@@ -19,11 +19,11 @@ properties(
     parameters(
       [
         [$class: 'ValidatingStringParameterDefinition',
-         defaultValue: 'x86_64,ppc64le',
-         description: 'A comma separated list of architectures to run the test on. Valid values include [x86_64, ppc64le, aarch64, s390x].',
+         defaultValue: 'all',
+         description: 'A comma separated list of architectures to run the test on. Valid values include [all] for all supported arches, [x86_64, ppc64le] for RHEL-7, and [x86_64, ppc64le, aarch64, s390x] for RHEL-8.',
          failedValidationMessage: 'Invalid architecture. Valid values are [x86_64, ppc64le, aarch64, s390x].',
          name: 'ARCHES',
-         regex: '^(?:x86_64|ppc64le|aarch64|s390x)(?:,\\s*(?:x86_64|ppc64le|aarch64|s390x))*$'
+         regex: '^((all){1}|(?:x86_64|ppc64le|aarch64|s390x)(?:,\\s*(?:x86_64|ppc64le|aarch64|s390x))*)$'
         ],
         string(
           defaultValue: 'https://github.com/redhat-multiarch-qe/multiarch-ci-libraries',
@@ -61,17 +61,17 @@ properties(
           name: 'TASK_ID'
         ),
         string(
-          defaultValue: 'RHEL-ALT-7.5',
+          defaultValue: 'RHEL-7.6',
           description: 'RHEL 7 distribution.',
           name: 'RHEL7_DISTRO'
         ),
         string(
-          defaultValue: 'RHEL-8.0.0-20190129.1',
+          defaultValue: 'RHEL-8.0.0',
           description: 'RHEL 8 distribution.',
           name: 'RHEL8_DISTRO'
         ),
         string(
-          defaultValue: 'jpoulin; mclay; djez; pcahyna',
+          defaultValue: 'jpoulin', //; mclay; djez; pcahyna',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'EMAIL_SUBSCRIBERS'
         )
@@ -97,10 +97,15 @@ String taskId = ''
 String nvr = ''
 
 // Required host information
-List arches = params.ARCHES.tokenize(',')
+List arches = []
 String os = ''
 String distro = ''
 String variant = ''
+
+final Map<String,List<String>> SUPPORTED_ARCHES = [
+    'rhel-7': ['x86_64', 'ppc64le'],
+    'rhel-8': ['x86_64', 'ppc64le', 'aarch64', 's390x']
+]
 
 // Lookup the build information
 MAQEAPI.v1.testWrapper(this, config) {
@@ -138,6 +143,19 @@ MAQEAPI.v1.testWrapper(this, config) {
     if (!distro) {
       error("Invalid distro: ${distro}.")
     }
+
+    // Ensure arch is supported for 
+    if (params.ARCHES == 'all') {
+        arches = SUPPORTED_ARCHES[os]
+    } else {
+        arches = params.ARCHES.tokenize(',')
+        for (arch in arches) {
+            if (!SUPPORTED_ARCHES[os].contains(arch)) {
+                error("Invalid arch specification. Architecture $arch is not supported on $os")
+            }
+        }
+    }
+    
 
     // Variant
     variant = (os == 'rhel-8') ? 'BaseOS' : 'Server'
