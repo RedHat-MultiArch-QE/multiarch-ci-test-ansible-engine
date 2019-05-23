@@ -90,6 +90,7 @@ library(
 def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
+config.jobgroup = 'multiarch-qe'
 
 // Get build information
 Map message = [:]
