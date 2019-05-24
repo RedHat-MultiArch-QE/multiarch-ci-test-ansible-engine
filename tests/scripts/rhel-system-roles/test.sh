@@ -7,7 +7,15 @@ cd "$(dirname ${BASH_SOURCE[0]})"
 workdir=$(pwd)
 
 # Install dependencies
-sudo yum install beakerlib python3-lxml
+. /etc/os-release
+OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
+if [ "$OS_MAJOR_VERSION" == "8" ]
+    sudo yum install beakerlib python3-lxml koji brewkoji -y
+    brew download-build --rpm libmodulemd-2.4.0-1.el8.$(arch).rpm
+    ls *.rpm
+    sudo yum --nogpgcheck localinstall -y *.rpm
+fi
+sudo yum install -y rhpkg
 
 # Clone test
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
