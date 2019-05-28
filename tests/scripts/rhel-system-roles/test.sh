@@ -16,7 +16,7 @@ if [ "$OS_MAJOR_VERSION" == "8" ]; then
     ls *.rpm
     sudo yum --nogpgcheck localinstall -y *.rpm
 fi
-sudo yum install -y rhpkg yum-utils wget qemu-kvm genisoimage
+sudo yum install -y rhpkg yum-utils wget qemu-kvm genisoimage beakerlib-libraries
 
 # Clone test
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
