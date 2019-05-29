@@ -16,7 +16,7 @@ fi
 
 brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
 ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
-sudo yum install -y rhpkg yum-utils wget qemu-kvm genisoimage rhel-system-roles
+sudo yum install -y ansible rhpkg yum-utils wget qemu-kvm genisoimage rhel-system-roles
 
 # Clone test
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
