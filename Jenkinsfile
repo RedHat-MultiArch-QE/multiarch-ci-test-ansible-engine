@@ -26,12 +26,12 @@ properties(
          regex: '^((all){1}|(?:x86_64|ppc64le|aarch64|s390x)(?:,\\s*(?:x86_64|ppc64le|aarch64|s390x))*)$'
         ],
         string(
-          defaultValue: 'https://github.com/redhat-multiarch-qe/multiarch-ci-libraries',
+          defaultValue: 'https://github.com/jaypoulz/multiarch-ci-libraries',
           description: 'Repo for shared libraries.',
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'v1.2.2',
+          defaultValue: 'dev-v2.0.0',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
@@ -86,6 +86,12 @@ library(
   retriever: modernSCM([$class: 'GitSCMSource',remote: "${params.LIBRARIES_REPO}"])
 )
 
+// String Constants
+X86_64 = 'x86_64'
+PPC64LE = 'ppc64le'
+AARCH64 = 'aarch64'
+S390X = 's390x'
+
 // MACIT configuration
 def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
@@ -104,8 +110,8 @@ String distro = ''
 String variant = ''
 
 final Map<String,List<String>> SUPPORTED_ARCHES = [
-    'rhel-7': ['x86_64', 'ppc64le'],
-    'rhel-8': ['x86_64', 'ppc64le', 'aarch64', 's390x']
+    'rhel-7': [X86_64, PPC64LE],
+    'rhel-8': [X86_64, PPC64LE, AARCH64, S390X]
 ]
 
 // Lookup the build information
@@ -175,6 +181,23 @@ for (String arch in arches) {
   if (os == 'rhel-8') {
       targetHost.inventoryVars = [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
   }
+
+  // Ensure there is enough memory to run KVM
+  targetHost.bkrHostRequires = [[ tag: 'memory', op: '>=', value: '2048', type:'system' ]]
+
+  // Ensure x86_64 hosts support virtualization
+  if (targetHost.arch == X86_64) {
+      targetHost.bkrKeyValue = [ 'HVM==1' ]
+  }
+
+  // Ensure power machine is baremetal or running powerVM
+  if (targetHost.arch == PPC64LE) {
+      targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
+      
+      // Disable radix on power because KVM will not work with PR type acceleration on Power 9 and PowerVM LPARs do not support HV
+      targetHost.bkrKernelOptionsPost = 'disable_radix'
+  }
+
   targetHosts.push(targetHost)
 }
 
@@ -205,7 +228,7 @@ MAQEAPI.v1.runTest(
   { Exception exception, def host ->
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
-    if (host.arch.equals("x86_64") || host.arch.equals("ppc64le")) {
+    if (host.arch.equals(X86_64) || host.arch.equals(PPC64LE)) {
       currentBuild.result = 'FAILURE'
     }
   },
