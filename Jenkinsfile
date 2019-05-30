@@ -203,17 +203,17 @@ for (String arch in arches) {
 }
 
 // Add my testing hosts
-def preprovisionedHost = MAQEAPI.v1.newTargetHost()
+def targetHost = MAQEAPI.v1.newTargetHost()
 targetHost.hostname = 'jpoulin-02.usersys.redhat.com'
 targetHost.provisioner = 'NOOP'
 targetHost.arch = 'x86_64'
-targetHosts.push(preprovisionedHost)
+targetHosts.push(targetHost)
 
-preprovisionedHost = MAQEAPI.v1.newTargetHost()
+targetHost = MAQEAPI.v1.newTargetHost()
 targetHost.hostname = 'jpoulin-01.usersys.redhat.com'
 targetHost.provisioner = 'NOOP'
 targetHost.arch = 'x86_64'
-targetHosts.push(preprovisionedHost)
+targetHosts.push(targetHost)
 
 MAQEAPI.v1.runTest(
   this,
