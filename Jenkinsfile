@@ -157,7 +157,7 @@ MAQEAPI.v1.testWrapper(this, config) {
     } else {
         arches = params.ARCHES.tokenize(',')
         for (arch in arches) {
-            if (!SUPPORTED_ARCHES[os].contains(arch)) {
+            if (!SUPPORTED_ARCHES[os].contains(arch.trim())) {
                 error("Invalid arch specification. Architecture $arch is not supported on $os")
             }
         }
