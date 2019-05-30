@@ -189,6 +189,10 @@ for (String arch in arches) {
   // Ensure x86_64 hosts support virtualization
   if (targetHost.arch == X86_64) {
       targetHost.bkrKeyValue = [ 'HVM==1' ]
+
+      // Use testing box
+      targetHost.hostname = 'jpoulin-02.usersys.redhat.com'
+      targetHost.provisioner = 'NOOP'
   }
 
   // Ensure power machine is baremetal or running powerVM
@@ -201,19 +205,6 @@ for (String arch in arches) {
 
   targetHosts.push(targetHost)
 }
-
-// Add my testing hosts
-def targetHost = MAQEAPI.v1.newTargetHost()
-targetHost.hostname = 'jpoulin-02.usersys.redhat.com'
-targetHost.provisioner = 'NOOP'
-targetHost.arch = 'x86_64'
-targetHosts.push(targetHost)
-
-targetHost = MAQEAPI.v1.newTargetHost()
-targetHost.hostname = 'jpoulin-01.usersys.redhat.com'
-targetHost.provisioner = 'NOOP'
-targetHost.arch = 'x86_64'
-targetHosts.push(targetHost)
 
 MAQEAPI.v1.runTest(
   this,
