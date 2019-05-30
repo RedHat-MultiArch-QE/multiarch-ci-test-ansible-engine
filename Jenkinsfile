@@ -86,6 +86,9 @@ library(
   retriever: modernSCM([$class: 'GitSCMSource',remote: "${params.LIBRARIES_REPO}"])
 )
 
+// Job Configuration
+def useDebugServer = false
+
 // String Constants
 X86_64 = 'x86_64'
 PPC64LE = 'ppc64le'
@@ -191,8 +194,10 @@ for (String arch in arches) {
       targetHost.bkrKeyValue = [ 'HVM==1' ]
 
       // Use testing box
-      targetHost.hostname = 'jpoulin-02.usersys.redhat.com'
-      targetHost.provisioner = 'NOOP'
+      if (useDebugServer) {
+          targetHost.hostname = 'jpoulin-02.usersys.redhat.com'
+          targetHost.provisioner = 'NOOP'
+      }
   }
 
   // Ensure power machine is baremetal or running powerVM
