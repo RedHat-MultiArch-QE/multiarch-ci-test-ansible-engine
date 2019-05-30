@@ -11,7 +11,6 @@ workdir=$(pwd)
 OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
 if [ "$OS_MAJOR_VERSION" == "8" ]; then
     sudo yum install beakerlib python3-lxml koji brewkoji -y
-    #brew download-build --rpm libmodulemd1-1.8.10-1.el8.$(arch).rpm
 fi
 
 brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
