@@ -13,7 +13,7 @@ if [ "$OS_MAJOR_VERSION" == "8" ]; then
     sudo yum install beakerlib python3-lxml koji brewkoji -y
 fi
 
-brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
+brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm sshpass-1.06-3.el8ae.$(arch).rpm 
 ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 sudo yum install -y ansible rhpkg yum-utils wget qemu-kvm genisoimage rhel-system-roles
 
