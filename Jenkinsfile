@@ -180,6 +180,7 @@ MAQEAPI.v1.testWrapper(this, config) {
 def targetHosts = []
 for (String arch in arches) {
   def targetHost = MAQEAPI.v1.newTargetHost()
+  targetHost.name = arch
   targetHost.arch = arch
   targetHost.distro = distro
   targetHost.variant = variant
