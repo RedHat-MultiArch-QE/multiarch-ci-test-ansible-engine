@@ -221,7 +221,7 @@ MAQEAPI.v1.runTest(
     /* TEST BODY                                             */
     /* @param host               Provisioned host details.   */
     /*********************************************************/
-    installBrewPkgs(params, config.runOnSlave)
+    installBrewPkgs(params, config.runOnSlave, config, host)
 
     stage ('Download Test Files') {
       downloadTests()
