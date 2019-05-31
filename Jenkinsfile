@@ -86,9 +86,6 @@ library(
   retriever: modernSCM([$class: 'GitSCMSource',remote: "${params.LIBRARIES_REPO}"])
 )
 
-// Job Configuration
-def useDebugServer = false
-
 // String Constants
 X86_64 = 'x86_64'
 PPC64LE = 'ppc64le'
@@ -100,7 +97,10 @@ def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 config.jobgroup = 'multiarch-qe'
-config.teardown = false
+config.teardown = true
+
+// Job Configuration
+def useDebugServer = false
 
 // Get build information
 Map message = [:]
