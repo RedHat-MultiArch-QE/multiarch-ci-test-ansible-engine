@@ -10,12 +10,8 @@ pushd $workdir
 . /etc/os-release
 OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
 if [ "$OS_MAJOR_VERSION" == "8" ]; then
-    sudo yum install beakerlib python3-lxml koji brewkoji -y
+    sudo yum install python3-lxml koji brewkoji -y
 fi
-
-# Install beakerlib libraries
-brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
-ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
 # Configure pulp repos
 PULP_BASEURL=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist
@@ -33,7 +29,11 @@ sudo yum-config-manager --add-repo  $ANSIBLE_REPO
 sudo rpm --import https://www.redhat.com/security/fd431d51.txt
 
 # Install test dependencies
-sudo yum install -y ansible rhpkg yum-utils wget qemu-kvm genisoimage rhel-system-roles
+sudo yum install -y ansible rhpkg yum-utils wget qemu-kvm genisoimage rhel-system-roles beakerlib beakerlib-redhat
+
+# Install beakerlib libraries
+brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
+ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
 # Clone test
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
