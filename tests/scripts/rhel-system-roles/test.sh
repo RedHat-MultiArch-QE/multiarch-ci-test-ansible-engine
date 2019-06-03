@@ -3,7 +3,8 @@
 # Attempts to clone down the test package and run it
 
 # Save directory info
-pushd "$(dirname ${BASH_SOURCE[0]})"
+workdir="$(dirname ${BASH_SOURCE[0]})"
+pushd $workdir
 
 # Install dependencies
 . /etc/os-release
@@ -41,7 +42,7 @@ git checkout private-upstream_testsuite_refactor
 cd Sanity/Upstream-testsuite
 
 # Define output
-output_dir="artifacts/rhel-system-roles/results"
+output_dir="$workdir/artifacts/rhel-system-roles/results"
 output_file="$output_dir/$(arch)-test-output.txt"
 mkdir -p $output_dir
 
