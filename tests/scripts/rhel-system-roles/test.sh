@@ -62,7 +62,7 @@ git checkout private-upstream_testsuite_refactor
 cd Sanity/Upstream-testsuite
 
 # Define output
-output_dir="$workdir/artifacts/rhel-system-roles/results"
+output_dir="$workdir/artifacts"
 output_file="$output_dir/$(arch)-test-output.txt"
 mkdir -p $output_dir
 
