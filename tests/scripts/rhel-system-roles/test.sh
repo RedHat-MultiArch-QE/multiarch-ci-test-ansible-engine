@@ -10,7 +10,7 @@ pushd $workdir
 . /etc/os-release
 OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
 if [ "$OS_MAJOR_VERSION" == "8" ]; then
-    sudo yum install python3-lxml koji brewkoji -y
+    sudo yum install beakerlib rhts-test-env beah beakerlib-redhat python3-lxml koji brewkoji -y
 fi
 
 # Configure pulp repos
@@ -28,14 +28,23 @@ esac
 sudo yum-config-manager --add-repo  $ANSIBLE_REPO
 sudo rpm --import https://www.redhat.com/security/fd431d51.txt
 
+# Install pulp extras repo on RHEL 7
+if [ "$OS_MAJOR_VERSION" == "7" ]; then
+    RHEL7_EXTRAS_REPO=$PULP_BASEURL/rhel/${RHEL7_SOURCEDIRS[$(arch)]}/$OS_MAJOR_VERSION/$OS_MAJOR_VERSION$VARIANT/$(arch)/extras/os
+    sudo yum-config-manager --add-repo $RHEL7_EXTRAS_REPO
+fi
+
 # Install test dependencies
-sudo yum install -y ansible rhpkg yum-utils wget qemu-kvm genisoimage rhel-system-roles beakerlib beakerlib-redhat
+sudo yum install -y rhpkg yum-utils wget qemu-kvm genisoimage
+
+# Install desired ansible and rhel-system-roles
+sudo yum install -y ansible rhel-system-roles
 
 # Install beakerlib libraries on rhel 8
-if [ "$OS_MAJOR_VERSION" == "8" ]; then
-    brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
-    ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
-fi
+#if [ "$OS_MAJOR_VERSION" == "8" ]; then
+#    brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
+#    ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
+#fi
 
 # Clone test
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
