@@ -10,13 +10,18 @@ pushd $workdir
 . /etc/os-release
 OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
 
-# Ensure test env is installed
-# sudo yum install -y beakerlib rhts-test-env beah beakerlib-redhat
+# Ensure test libs are installed
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://beaker.engineering.redhat.com/rpms/
+sudo yum install -y --nogpgcheck \
+    distribution-distribution-Library-RpmSnapshot \
+    distribution-distribution-Library-epel \
+    distribution-distribution-Library-extras
 
 # Install brew for additional dependencies
-sudo yum install -y koji brewkoji
-brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
-ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
+#sudo yum install -y koji brewkoji
+#brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
+#ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
 # Configure pulp repos
 PULP_BASEURL=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist
@@ -40,7 +45,7 @@ if [ "$OS_MAJOR_VERSION" == "7" ]; then
 fi
 
 # Install test dependencies
-sudo yum install -y rhpkg yum-utils wget qemu-kvm genisoimage
+sudo yum install -y rhpkg wget qemu-kvm genisoimage
 
 # Install target ansible and rhel-system-roles
 sudo yum install -y ansible rhel-system-roles
