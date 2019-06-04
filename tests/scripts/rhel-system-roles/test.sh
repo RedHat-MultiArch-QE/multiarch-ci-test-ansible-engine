@@ -31,9 +31,11 @@ sudo rpm --import https://www.redhat.com/security/fd431d51.txt
 # Install test dependencies
 sudo yum install -y ansible rhpkg yum-utils wget qemu-kvm genisoimage rhel-system-roles beakerlib beakerlib-redhat
 
-# Install beakerlib libraries
-brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
-ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
+# Install beakerlib libraries on rhel 8
+if [ "$OS_MAJOR_VERSION" == "8" ]; then
+    brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
+    ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
+fi
 
 # Clone test
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
