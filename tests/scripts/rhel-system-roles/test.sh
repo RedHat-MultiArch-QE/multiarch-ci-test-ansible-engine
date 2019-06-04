@@ -11,7 +11,7 @@ pushd $workdir
 OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
 
 # Ensure test env is installed
-sudo yum install -y beakerlib rhts-test-env beah beakerlib-redhat
+# sudo yum install -y beakerlib rhts-test-env beah beakerlib-redhat
 
 # Install brew for additional dependencies
 sudo yum install -y koji brewkoji
@@ -45,7 +45,7 @@ sudo yum install -y rhpkg yum-utils wget qemu-kvm genisoimage
 # Install target ansible and rhel-system-roles
 sudo yum install -y ansible rhel-system-roles
 
-# Install beakerlib libraries on rhel 8
+# Install libxml on rhel 8
 if [ "$OS_MAJOR_VERSION" == "8" ]; then
     sudo yum install -y python3-lxml
 fi
