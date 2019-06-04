@@ -3,15 +3,18 @@
 # Attempts to clone down the test package and run it
 
 # Save directory info
-workdir="$(dirname ${BASH_SOURCE[0]})"
+workdir="$(dirname $(readlink -f ${BASH_SOURCE[0]}))"
 pushd $workdir
 
-# Install dependencies
+# Get OS information
 . /etc/os-release
 OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
-if [ "$OS_MAJOR_VERSION" == "8" ]; then
-    sudo yum install beakerlib rhts-test-env beah beakerlib-redhat python3-lxml koji brewkoji -y
-fi
+
+# Ensure test env is installed
+sudo yum install -y beakerlib rhts-test-env beah beakerlib-redhat python3-lxml
+
+# Install brew for additional dependencies
+# sudo yum install -y koji brewkoji
 
 # Configure pulp repos
 PULP_BASEURL=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist
@@ -37,7 +40,7 @@ fi
 # Install test dependencies
 sudo yum install -y rhpkg yum-utils wget qemu-kvm genisoimage
 
-# Install desired ansible and rhel-system-roles
+# Install target ansible and rhel-system-roles
 sudo yum install -y ansible rhel-system-roles
 
 # Install beakerlib libraries on rhel 8
