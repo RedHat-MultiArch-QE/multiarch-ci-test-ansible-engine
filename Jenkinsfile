@@ -167,7 +167,6 @@ MAQEAPI.v1.testWrapper(this, config) {
             }
         }
     }
-    
 
     // Variant
     variant = (os == 'rhel-8') ? 'BaseOS' : 'Server'
@@ -186,6 +185,7 @@ for (String arch in arches) {
   targetHost.variant = variant
   if (os == 'rhel-8') {
       targetHost.inventoryVars = [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
+      targetHost.bkrKsMeta = "method=nfs harness='restraint-rhts beakerlib-redhat'"
   }
 
   // Ensure there is enough memory to run KVM
