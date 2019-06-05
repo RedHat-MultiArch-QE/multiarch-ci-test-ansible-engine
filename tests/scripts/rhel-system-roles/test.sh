@@ -92,7 +92,7 @@ test_status=$?
 # Copy ansible logs from tmp
 log_dir="$workdir/artifacts/$(arch)/test-logs"
 mkdir -p $log_dir
-cp /var/tmp/BEAKERLIB_STORED_SYSTEM-ROLE-* $log_dir
+cp -r /var/tmp/BEAKERLIB_STORED_* $log_dir
 
 # Cleanup
 popd
