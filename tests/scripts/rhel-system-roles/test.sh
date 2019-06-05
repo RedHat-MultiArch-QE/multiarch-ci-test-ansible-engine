@@ -19,9 +19,10 @@ sudo yum install -y --nogpgcheck \
     distribution-distribution-Library-extras
 
 # Install brew for additional dependencies
-#sudo yum install -y koji brewkoji
+sudo yum install -y koji brewkoji
+brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
 #brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
-#ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
+ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
 # Configure pulp repos
 PULP_BASEURL=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist
@@ -70,4 +71,14 @@ mkdir -p $output_dir
 sudo make &> $output_file run
 
 # Ensure Success and Restore Directory
-grep "OVERALL RESULT" $output_file | grep "PASS" && popd
+grep "OVERALL RESULT" $output_file | grep "PASS"
+test_status=$?
+
+# Copy ansible logs from tmp
+log_dir="$workdir/artifacts/test-logs"
+mkdir -p $log_dir
+cp /var/tmp/BEAKERLIB_STORED_SYSTEM-ROLE-* $log_dir
+
+# Cleanup
+popd
+exit $test_status
