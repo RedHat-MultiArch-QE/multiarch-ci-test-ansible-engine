@@ -21,13 +21,6 @@ sudo yum install -y --nogpgcheck \
 # Ensure beakerlib is installed
 sudo yum install -y beakerlib beakerlib-redhat
 
-# Install brew for additional dependencies
-sudo yum install -y koji brewkoji
-brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
-brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
-#brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
-ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
-
 # Configure pulp repos
 PULP_BASEURL=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist
 declare -A RHEL7_SOURCEDIRS=( ["x86_64"]="server" ["ppc64le"]="power-le" ["aarch64"]="arm-64" ["s390x"]="system-z" )
@@ -55,9 +48,17 @@ sudo yum install -y rhpkg wget qemu-kvm genisoimage
 # Install target ansible and rhel-system-roles
 sudo yum install -y ansible rhel-system-roles
 
-# Install libxml on rhel 8
+# Install additional rhel8 dependencies
 if [ "$OS_MAJOR_VERSION" == "8" ]; then
+    # Install libxml on rhel 8
     sudo yum install -y python3-lxml
+
+    # Install brew for additional dependencies
+    sudo yum install -y koji brewkoji
+    brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+    brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+    #brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
+    ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 fi
 
 # Clone test
