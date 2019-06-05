@@ -90,7 +90,7 @@ grep "OVERALL RESULT" $output_file | grep "PASS"
 test_status=$?
 
 # Copy ansible logs from tmp
-log_dir="$workdir/artifacts/test-logs"
+log_dir="$workdir/artifacts/$(arch)/test-logs"
 mkdir -p $log_dir
 cp /var/tmp/BEAKERLIB_STORED_SYSTEM-ROLE-* $log_dir
 
