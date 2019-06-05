@@ -46,7 +46,16 @@ fi
 sudo yum install -y rhpkg wget qemu-kvm genisoimage
 
 # Install target ansible and rhel-system-roles
-sudo yum install -y ansible rhel-system-roles
+sudo yum install -y ansible
+#sudo yum install -y rhel-system-roles
+
+# Install brew for additional packages
+sudo yum install -y koji brewkoji
+
+# Install additional rhel7 dependencies
+if [ "$OS_MAJOR_VERSION" == "7" ]; then
+    brew download-build --rpm rhel-system-roles-1.0-7.el7.noarch.rpm
+fi
 
 # Install additional rhel8 dependencies
 if [ "$OS_MAJOR_VERSION" == "8" ]; then
@@ -54,12 +63,13 @@ if [ "$OS_MAJOR_VERSION" == "8" ]; then
     sudo yum install -y python3-lxml
 
     # Install brew for additional dependencies
-    sudo yum install -y koji brewkoji
     brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
     brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
-    #brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
-    ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
+    brew download-build --rpm rhel-system-roles-1.0-6.el8.noarch.rpm
 fi
+
+# Install downloaded rpms
+ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
 # Clone test
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
