@@ -18,6 +18,9 @@ sudo yum install -y --nogpgcheck \
     distribution-distribution-Library-epel \
     distribution-distribution-Library-extras
 
+# Ensure beakerlib is installed
+sudo yum install -y beakerlib beakerlib-redhat
+
 # Install brew for additional dependencies
 sudo yum install -y koji brewkoji
 brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
