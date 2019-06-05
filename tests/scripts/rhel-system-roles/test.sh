@@ -20,7 +20,8 @@ sudo yum install -y --nogpgcheck \
 
 # Install brew for additional dependencies
 sudo yum install -y koji brewkoji
-brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
 #brew download-build --rpm beakerlib-libraries-0.4-1.module+el8+2902+97ffd857.noarch.rpm
 ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
