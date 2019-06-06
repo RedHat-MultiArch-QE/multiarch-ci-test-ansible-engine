@@ -92,6 +92,14 @@ test_status=$?
 # Copy ansible logs from tmp
 log_dir="$workdir/artifacts/$(arch)/test-logs"
 mkdir -p $log_dir
+
+# Stupid hack to get log files from ansible
+if [ "$OS_MAJOR_VERSION" == "8" ]; then
+    mkdir -p /var/tmp/BEAKERLIB_STORED_
+    cp /tmp/tmp.*/*.log /var/tmp/BEAKER_LIB_STORED_
+fi
+
+# Copy the stored beaker test files
 cp -r /var/tmp/BEAKERLIB_STORED_* $log_dir
 
 # Cleanup
