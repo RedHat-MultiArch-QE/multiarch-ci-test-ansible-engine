@@ -18,8 +18,8 @@ sudo yum install -y --nogpgcheck \
     distribution-distribution-Library-epel \
     distribution-distribution-Library-extras
 
-# Ensure beakerlib is installed
-sudo yum install -y beakerlib beakerlib-redhat
+# Ensure beakerlib and restraint are installed
+sudo yum install -y beakerlib beakerlib-redhat restraint-rhts
 
 # Configure pulp repos
 PULP_BASEURL=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist
