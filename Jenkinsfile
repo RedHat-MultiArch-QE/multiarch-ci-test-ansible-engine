@@ -56,7 +56,7 @@ properties(
           name: 'CI_MESSAGE'
         ),
         string(
-          defaultValue: '18574111',
+          defaultValue: '21729319',
           description: 'Build task ID for which to run the pipeline',
           name: 'TASK_ID'
         ),
@@ -97,7 +97,7 @@ def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 config.jobgroup = 'multiarch-qe'
-config.teardown = true
+config.teardown = false
 
 // Job Configuration
 def useDebugServer = false
