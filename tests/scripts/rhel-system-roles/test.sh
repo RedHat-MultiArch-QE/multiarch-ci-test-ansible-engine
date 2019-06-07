@@ -54,7 +54,7 @@ sudo yum install -y koji brewkoji
 
 # Install additional rhel7 dependencies
 if [ "$OS_MAJOR_VERSION" == "7" ]; then
-    brew download-build --rpm rhel-system-roles-1.0-7.el7.noarch.rpm
+    brew download-build --rpm rhel-system-roles-1.0-8.el7.noarch.rpm
 fi
 
 # Install additional rhel8 dependencies
