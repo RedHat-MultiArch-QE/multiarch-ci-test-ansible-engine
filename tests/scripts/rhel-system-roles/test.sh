@@ -79,6 +79,9 @@ cd rhel-system-roles
 git checkout private-upstream_testsuite_refactor
 cd Sanity/Upstream-testsuite
 
+# Update the RAM for the VM to 4096
+sed -ie s/2048/4096/ provision.fmf
+
 # Define output
 output_dir="$workdir/artifacts"
 output_file="$output_dir/$(arch)-test-output.txt"
