@@ -188,7 +188,7 @@ for (String arch in arches) {
   }
 
   // Ensure there is enough memory to run KVM
-  targetHost.bkrHostRequires = [[ tag: 'memory', op: '>=', value: '2048', type:'system' ]]
+  targetHost.bkrHostRequires = [[ tag: 'memory', op: '>=', value: '8192', type:'system' ]]
 
   // Ensure x86_64 hosts support virtualization
   if (targetHost.arch == X86_64) {
