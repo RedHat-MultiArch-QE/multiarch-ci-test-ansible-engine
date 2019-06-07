@@ -66,6 +66,8 @@ if [ "$OS_MAJOR_VERSION" == "8" ]; then
     brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
     brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
     brew download-build --rpm rhel-system-roles-1.0-6.el8.noarch.rpm
+    brew download-build --rpm beakerlib-1.18-6.el8bkr.noarch.rpm
+    brew download-build --rpm beakerlib-vim-syntax-1.18-6.el8bkr.noarch.rpm
 fi
 
 # Install downloaded rpms
