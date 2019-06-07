@@ -97,7 +97,7 @@ def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 config.jobgroup = 'multiarch-qe'
-config.teardown = false
+// config.teardown = false
 
 // Job Configuration
 def useDebugServer = false
