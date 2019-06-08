@@ -121,8 +121,8 @@ String distro = ''
 String variant = ''
 
 final Map<String,List<String>> SUPPORTED_ARCHES = [
-    RHEL7: [X86_64, PPC64LE],
-    RHEL8: [X86_64, PPC64LE, AARCH64, S390X]
+    (RHEL7): [X86_64, PPC64LE],
+    (RHEL8): [X86_64, PPC64LE, AARCH64, S390X]
 ]
 
 // Lookup the build information
@@ -169,8 +169,6 @@ MAQEAPI.v1.testWrapper(this, config) {
         arches = params.ARCHES.tokenize(',')
         for (arch in arches) {
             arch = arch.trim()
-            echo(arch)
-            echo(SUPPORTED_ARCHES)
             if (!SUPPORTED_ARCHES[os].contains(arch)) {
                 error("Invalid arch specification. Architecture $arch is not supported on $os")
             }
