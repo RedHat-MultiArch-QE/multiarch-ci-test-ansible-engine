@@ -73,7 +73,12 @@ properties(
         string(
           defaultValue: 'jpoulin', //; mclay; djez; pcahyna',
           description: 'Semi-colon delimited list of email notification recipients.',
-          name: 'EMAIL_SUBSCRIBERS'
+          name: 'RHEL7_EMAIL_SUBSCRIBERS'
+        ),
+        string(
+          defaultValue: 'jpoulin', //; mclay; djez; pcahyna',
+          description: 'Semi-colon delimited list of email notification recipients.',
+          name: 'RHEL8_EMAIL_SUBSCRIBERS'
         )
       ]
     )
@@ -91,6 +96,8 @@ X86_64 = 'x86_64'
 PPC64LE = 'ppc64le'
 AARCH64 = 'aarch64'
 S390X = 's390x'
+RHEL7 = 'rhel-7'
+RHEL8 = 'rhel-8'
 
 // MACIT configuration
 def errorMessages = ''
@@ -114,8 +121,8 @@ String distro = ''
 String variant = ''
 
 final Map<String,List<String>> SUPPORTED_ARCHES = [
-    'rhel-7': [X86_64, PPC64LE],
-    'rhel-8': [X86_64, PPC64LE, AARCH64, S390X]
+    RHEL7: [X86_64, PPC64LE],
+    RHEL8: [X86_64, PPC64LE, AARCH64, S390X]
 ]
 
 // Lookup the build information
@@ -145,12 +152,12 @@ MAQEAPI.v1.testWrapper(this, config) {
       """,
       returnStdout: true
     ).trim()
-    if (!os || !(['rhel-7', 'rhel-8'].contains(os))) {
+    if (!os || !([RHEL7, RHEL8].contains(os))) {
       error("Invalid OS version: ${os}.")
     }
 
     // Distro
-    distro = (os == 'rhel-8') ? params.RHEL8_DISTRO : params.RHEL7_DISTRO
+    distro = (os == RHEL8) ? params.RHEL8_DISTRO : params.RHEL7_DISTRO
     if (!distro) {
       error("Invalid distro: ${distro}.")
     }
@@ -169,7 +176,7 @@ MAQEAPI.v1.testWrapper(this, config) {
     }
 
     // Variant
-    variant = (os == 'rhel-8') ? 'BaseOS' : 'Server'
+    variant = (os == RHEL8) ? 'BaseOS' : 'Server'
     if (!variant) {
       error("Invalid variant: ${variant}.")
     }
@@ -183,7 +190,7 @@ for (String arch in arches) {
   targetHost.arch = arch
   targetHost.distro = distro
   targetHost.variant = variant
-  if (os == 'rhel-8') {
+  if (os == RHEL8) {
       targetHost.inventoryVars = [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
   }
 
@@ -257,7 +264,7 @@ MAQEAPI.v1.runTest(
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
-      to: "${params.EMAIL_SUBSCRIBERS}",
+      to: "${os == RHEL8 ? params.RHEL8_EMAIL_SUBSCRIBERS : params.RHEL7_EMAIL_SUBSCRIBERS}",
       attachmentsPattern: 'artifacts/tests/scripts/rhel-system-roles/artifacts/**/*.*'
     )
   }
