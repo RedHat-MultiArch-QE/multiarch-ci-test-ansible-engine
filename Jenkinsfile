@@ -239,9 +239,7 @@ MAQEAPI.v1.runTest(
   { Exception exception, def host ->
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
-    if (host.arch.equals(X86_64) || host.arch.equals(PPC64LE)) {
-      currentBuild.result = 'FAILURE'
-    }
+    currentBuild.result = 'FAILURE'
   },
   {
     try {
