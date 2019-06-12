@@ -209,10 +209,10 @@ for (String arch in arches) {
       targetHost.bkrHostRequires.add([tag:'hypervisor', op:'==', value:''])
     } else {
       targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
-    }
 
-    // Disable radix on power because KVM will not work with PR type acceleration on Power 9 and PowerVM LPARs do not support HV
-    targetHost.bkrKernelOptionsPost = 'disable_radix'
+      // Disable radix on power because KVM will not work with PR type acceleration on Power 9 and PowerVM LPARs do not support HV
+      targetHost.bkrKernelOptionsPost = 'disable_radix'
+    }
   }
 
   targetHosts.push(targetHost)
