@@ -79,6 +79,11 @@ properties(
           defaultValue: 'jpoulin', //; mclay; djez; pcahyna',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'RHEL8_EMAIL_SUBSCRIBERS'
+        ),
+        booleanParam(
+          defaultValue: false,
+          description: 'Force a ppc64le build to request a baremetal system.',
+          name: 'FORCE_BAREMETAL_POWER_SYSTEM'
         )
       ]
     )
@@ -104,10 +109,6 @@ def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 config.jobgroup = 'multiarch-qe'
-// config.teardown = false
-
-// Job Configuration
-def useDebugServer = false
 
 // Get build information
 Map message = [:]
@@ -162,7 +163,7 @@ MAQEAPI.v1.testWrapper(this, config) {
       error("Invalid distro: ${distro}.")
     }
 
-    // Ensure arch is supported for 
+    // Ensure arch is supported for
     if (params.ARCHES == 'all') {
         arches = SUPPORTED_ARCHES[os]
     } else {
@@ -200,20 +201,18 @@ for (String arch in arches) {
   // Ensure x86_64 hosts support virtualization
   if (targetHost.arch == X86_64) {
       targetHost.bkrKeyValue = [ 'HVM==1' ]
-
-      // Use testing box
-      if (useDebugServer) {
-          targetHost.hostname = 'jpoulin-02.usersys.redhat.com'
-          targetHost.provisioner = 'NOOP'
-      }
   }
 
   // Ensure power machine is baremetal or running powerVM
   if (targetHost.arch == PPC64LE) {
+    if (params.FORCE_BAREMETAL_POWER_SYSTEM) {
+      targetHost.bkrHostRequires.add([[tag:'hypervisor', op:'==', value:'']])
+    } else {
       targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
-      
-      // Disable radix on power because KVM will not work with PR type acceleration on Power 9 and PowerVM LPARs do not support HV
-      targetHost.bkrKernelOptionsPost = 'disable_radix'
+    }
+
+    // Disable radix on power because KVM will not work with PR type acceleration on Power 9 and PowerVM LPARs do not support HV
+    targetHost.bkrKernelOptionsPost = 'disable_radix'
   }
 
   targetHosts.push(targetHost)
