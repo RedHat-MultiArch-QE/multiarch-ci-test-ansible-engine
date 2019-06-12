@@ -206,7 +206,7 @@ for (String arch in arches) {
   // Ensure power machine is baremetal or running powerVM
   if (targetHost.arch == PPC64LE) {
     if (params.FORCE_BAREMETAL_POWER_SYSTEM) {
-      targetHost.bkrHostRequires.add([[tag:'hypervisor', op:'==', value:'']])
+      targetHost.bkrHostRequires.add([tag:'hypervisor', op:'==', value:''])
     } else {
       targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
     }
