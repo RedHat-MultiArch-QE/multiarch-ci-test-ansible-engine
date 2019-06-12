@@ -83,8 +83,8 @@ cd Sanity/Upstream-testsuite
 sed -ie s/2048/4096/ provision.fmf
 
 # Define output
-output_dir="$workdir/artifacts"
-output_file="$output_dir/$(arch)-test-output.txt"
+output_dir="$workdir/artifacts/$(arch)"
+output_file="$output_dir/test-output.txt"
 mkdir -p $output_dir
 
 # Run the test
