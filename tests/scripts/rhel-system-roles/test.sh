@@ -47,14 +47,15 @@ sudo yum install -y rhpkg wget qemu-kvm genisoimage
 
 # Install target ansible and rhel-system-roles
 sudo yum install -y ansible
-#sudo yum install -y rhel-system-roles
+sudo yum install -y rhel-system-roles
 
 # Install brew for additional packages
 sudo yum install -y koji brewkoji
 
-# Install additional rhel7 dependencies
-if [ "$OS_MAJOR_VERSION" == "7" ]; then
-    brew download-build --rpm rhel-system-roles-1.0-8.el7.noarch.rpm
+# Override system roles if requested
+RHEL_SYSTEM_ROLES_OVERRIDE=$1
+if [ -n "$RHEL_SYSTEM_ROLES_OVERRIDE" ]; then
+    brew download-build --rpm "$RHEL_SYSTEM_ROLES_OVERRIDE"
 fi
 
 # Install additional rhel8 dependencies
@@ -65,7 +66,6 @@ if [ "$OS_MAJOR_VERSION" == "8" ]; then
     # Install brew for additional dependencies
     brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
     brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
-    brew download-build --rpm rhel-system-roles-1.0-6.el8.noarch.rpm
     brew download-build --rpm beakerlib-1.18-6.el8bkr.noarch.rpm
     brew download-build --rpm beakerlib-vim-syntax-1.18-6.el8bkr.noarch.rpm
 fi
