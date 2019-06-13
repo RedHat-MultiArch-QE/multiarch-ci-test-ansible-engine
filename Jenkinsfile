@@ -84,6 +84,11 @@ properties(
           defaultValue: false,
           description: 'Force a ppc64le build to request a baremetal system.',
           name: 'FORCE_BAREMETAL_POWER_SYSTEM'
+        ),
+        booleanParam(
+          defaultValue: true,
+          description: 'Teardown on complete.',
+          name: 'TEARDOWN'
         )
       ]
     )
@@ -109,6 +114,7 @@ def errorMessages = ''
 def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 config.jobgroup = 'multiarch-qe'
+config.teardown = params.TEARDOWN
 
 // Get build information
 Map message = [:]
