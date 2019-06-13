@@ -84,7 +84,7 @@ sed -ie s/2048/4096/ provision.fmf
 
 # Define output
 output_dir="$workdir/artifacts/$(arch)"
-output_file="$output_dir/test-output.txt"
+output_file="$output_dir/$(arch)-test-output.txt"
 mkdir -p $output_dir
 
 # Run the test
@@ -95,7 +95,7 @@ grep "OVERALL RESULT" $output_file | grep "PASS"
 test_status=$?
 
 # Copy ansible logs from tmp
-log_dir="$workdir/artifacts/$(arch)/test-logs"
+log_dir="$workdir/artifacts/$(arch)/$(arch)-test-logs"
 mkdir -p $log_dir
 cp -r /var/tmp/BEAKERLIB_STORED_* $log_dir
 
