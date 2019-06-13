@@ -71,6 +71,11 @@ properties(
           name: 'RHEL8_DISTRO'
         ),
         string(
+          defaultValue: '',
+          description: 'Optional override to get the rhel-system-roles package from brew.',
+          name: 'RHEL_SYSTEM_ROLES_OVERRIDE'
+        ),
+        string(
           defaultValue: 'jpoulin', //; mclay; djez; pcahyna',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'RHEL7_EMAIL_SUBSCRIBERS'
@@ -197,6 +202,7 @@ for (String arch in arches) {
   targetHost.arch = arch
   targetHost.distro = distro
   targetHost.variant = variant
+  targetHost.scriptParams = params.RHEL_SYSTEM_ROLES_OVERRIDE
   if (os == RHEL8) {
       targetHost.inventoryVars = [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
   }
