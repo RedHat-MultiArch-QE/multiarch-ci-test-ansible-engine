@@ -73,6 +73,9 @@ fi
 # Install downloaded rpms
 ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
+# Set the ansible config
+sudo cp ansible.cfg /etc/ansible/ansible.cfg
+
 # Clone test
 rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
 cd rhel-system-roles
@@ -81,9 +84,6 @@ cd Sanity/Upstream-testsuite
 
 # Update the RAM for the VM to 4096
 sed -ie s/2048/4096/ provision.fmf
-
-# Set the ansible config
-sudo cp ansible.cfg /etc/ansible/ansible.cfg
 
 # Define output
 output_dir="$workdir/artifacts/$(arch)"
