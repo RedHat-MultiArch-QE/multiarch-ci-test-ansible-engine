@@ -61,7 +61,7 @@ properties(
           name: 'TASK_ID'
         ),
         string(
-          defaultValue: 'RHEL-7.6',
+          defaultValue: 'RHEL-ALT-7.6',
           description: 'RHEL 7 distribution.',
           name: 'RHEL7_DISTRO'
         ),
