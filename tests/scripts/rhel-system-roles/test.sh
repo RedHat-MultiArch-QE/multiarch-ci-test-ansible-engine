@@ -18,9 +18,6 @@ sudo yum install -y --nogpgcheck \
     distribution-distribution-Library-epel \
     distribution-distribution-Library-extras
 
-# Ensure beakerlib and restraint are installed
-sudo yum install -y beakerlib beakerlib-redhat restraint-rhts
-
 # Configure pulp repos
 PULP_BASEURL=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist
 declare -A RHEL7_SOURCEDIRS=( ["x86_64"]="server" ["ppc64le"]="power-le" ["aarch64"]="arm-64" ["s390x"]="system-z" )
@@ -42,15 +39,13 @@ if [ "$OS_MAJOR_VERSION" == "7" ]; then
     sudo yum-config-manager --add-repo $RHEL7_EXTRAS_REPO
 fi
 
-# Install test dependencies
-sudo yum install -y rhpkg wget qemu-kvm genisoimage
-
-# Install target ansible and rhel-system-roles
-sudo yum install -y ansible
-sudo yum install -y rhel-system-roles
-
-# Install brew for additional packages
-sudo yum install -y koji brewkoji
+# Install test dependencies, target ansible, rhel-system-roles, brew, and
+# beakerlib
+sudo yum install -y rhpkg wget qemu-kvm genisoimage \
+    ansible \
+    rhel-system-roles \
+    koji brewkoji \
+    beakerlib beakerlib-redhat restraint-rhts
 
 # Override system roles if requested
 RHEL_SYSTEM_ROLES_OVERRIDE=$1
@@ -73,11 +68,14 @@ fi
 # Install downloaded rpms
 ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
+# Install dependencies covered by brew
+sudo yum install -y rhpkg
+
 # Set the ansible config
 sudo cp ansible.cfg /etc/ansible/ansible.cfg
 
 # Clone test
-rhpkg --verbose --user=jenkins clone tests/rhel-system-roles
+rhpkg --verbose --user=jenkins clone tests/rhel-system-roles || git clone ssh://jenkins@pkgs.devel.redhat.com/tests/rhel-system-roles
 cd rhel-system-roles
 git checkout private-upstream_testsuite_refactor
 cd Sanity/Upstream-testsuite
