@@ -41,7 +41,7 @@ fi
 
 # Install test dependencies, target ansible, rhel-system-roles, brew, and
 # beakerlib
-sudo yum install -y rhpkg wget qemu-kvm genisoimage \
+sudo yum install -y wget qemu-kvm genisoimage \
     ansible \
     rhel-system-roles \
     koji brewkoji \
