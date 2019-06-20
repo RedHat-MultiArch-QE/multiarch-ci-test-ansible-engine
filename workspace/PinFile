@@ -1,0 +1,84 @@
+---
+beaker-slave:
+  topology:
+    topology_name: beaker-slave
+    resource_groups:
+    - resource_group_name: beaker-slave
+      resource_group_type: beaker
+      resource_definitions:
+      - role: bkr_server
+        {% if job_group %}
+        job_group: {{ job_group }}
+        {% endif %}
+        whiteboard: "{{ arch | default('x86_64') }} slave for multiarch testing"
+        max_attempts: 180
+        attempt_wait_time: 60
+        cancel_message: Beaker request timeout
+        recipesets:
+        - distro: {{ distro | default('RHEL-ALT-7.5') }}
+          arch: {{ arch | default('x86_64') }}
+          variant: {{ variant | default('Server') }}
+          {% if ks_meta %}
+          ks_meta: {{ ks_meta | default('') }}
+          {% endif %}
+          {% if kernel_options %}
+          kernel_options: {{ kernel_options | default('') }}
+          {% endif %}
+          {% if kernel_options_post %}
+          kernel_options_post: {{ kernel_options_post | default('') }}
+          {% endif %}
+          {% if method %}
+          method: {{ method | default('nfs') }}
+          {% endif %}
+          {% if reserve_duration %}
+          reserve_duration: {{ reserve_duration | default('86400') }}
+          {% endif %}
+          count: 2
+          name: "Jenkins Slave"
+          {% if hostrequires %}
+          hostrequires:
+            {% for req in hostrequires %}
+            {% if req.tag %}
+            - tag: "{{ req.tag }}"
+              op: "{{ req.op }}"
+              value: "{{ req.value }}"
+              {% if req.type %}
+              type: "{{ req.type }}"
+              {% endif %}
+            {% endif %}
+            {% if req.rawxml %}
+            - rawxml: '{{ req.rawxml }}'
+            {% endif %}
+            {% endfor %}
+          {% endif %}
+          {% if keyvalue %}
+          keyvalue:
+            {% for kv in keyvalue %}
+            - "{{ kv }}"
+            {% endfor %}
+          {% endif %}
+  layout:
+    inventory_layout:
+      {% if inventory_vars %}
+      vars:
+        {% for key, value in inventory_vars.items() %}
+          {{ key }}: "{{ value }}"
+        {% endfor %}
+      {% endif %}
+      hosts:
+        ansible-controller:
+          count: 1
+          host_groups:
+            - rhel7
+            - certificate_authority
+            - repositories
+            - jenkins_slave
+            - master_node
+        ansible-target:
+          count: 1
+          host_groups:
+            - rhel7
+            - certificate_authority
+            - repositories
+            - jenkins_slave
+            - target_node
