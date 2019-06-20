@@ -59,8 +59,8 @@ if [ "$OS_MAJOR_VERSION" == "8" ]; then
     sudo yum install -y python3-lxml
 
     # Install brew for additional dependencies
-    brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
-    brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+    # brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+    # brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
     brew download-build --rpm beakerlib-1.18-6.el8bkr.noarch.rpm
     brew download-build --rpm beakerlib-vim-syntax-1.18-6.el8bkr.noarch.rpm
 fi
@@ -75,13 +75,13 @@ sudo yum install -y rhpkg
 sudo cp ansible.cfg /etc/ansible/ansible.cfg
 
 # Clone test
-rhpkg --verbose --user=jenkins clone tests/rhel-system-roles || git clone ssh://jenkins@pkgs.devel.redhat.com/tests/rhel-system-roles
-cd rhel-system-roles
-git checkout private-upstream_testsuite_refactor
-cd Sanity/Upstream-testsuite
+# rhpkg --verbose --user=jenkins clone tests/rhel-system-roles || git clone ssh://jenkins@pkgs.devel.redhat.com/tests/rhel-system-roles
+# cd rhel-system-roles
+# git checkout private-upstream_testsuite_refactor
+# cd Sanity/Upstream-testsuite
 
 # Update the RAM for the VM to 4096
-sed -ie s/2048/4096/ provision.fmf
+# sed -ie s/2048/4096/ provision.fmf
 
 # Define output
 output_dir="$workdir/artifacts/$(arch)"
