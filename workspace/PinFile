@@ -62,7 +62,7 @@ beaker-slave:
       {% if inventory_vars %}
       vars:
         {% for key, value in inventory_vars.items() %}
-          {{ key }}: "{{ value }}"
+          {{ key }}: '{{ value }}'
         {% endfor %}
       {% endif %}
       hosts:
