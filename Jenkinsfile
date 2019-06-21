@@ -211,8 +211,9 @@ for (String arch in arches) {
   targetHost.distro = distro
   targetHost.variant = variant
   targetHost.scriptParams = (os == RHEL8) ? params.RHEL8_SYSTEM_ROLES_OVERRIDE : params.RHEL7_SYSTEM_ROLES_OVERRIDE
+  targetHost.inventoryVars = [ ansible_ssh_private_key_file:'/home/jenkins/.ssh/id_rsa' ]
   if (os == RHEL8) {
-      targetHost.inventoryVars = [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
+      targetHost.inventoryVars << [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
   }
 
   // Ensure there is enough memory to run KVM
