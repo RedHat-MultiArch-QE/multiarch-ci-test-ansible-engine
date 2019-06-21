@@ -213,7 +213,7 @@ for (String arch in arches) {
   targetHost.scriptParams = (os == RHEL8) ? params.RHEL8_SYSTEM_ROLES_OVERRIDE : params.RHEL7_SYSTEM_ROLES_OVERRIDE
   targetHost.inventoryVars = [
     ansible_ssh_private_key_file:'/home/jenkins/.ssh/id_rsa',
-    ansible_ssh_common_args:'UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no',
+    ansible_ssh_common_args:'"-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"',
   ]
   if (os == RHEL8) {
       targetHost.inventoryVars << [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
