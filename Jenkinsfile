@@ -50,6 +50,13 @@ properties(
           description: 'Directory containing tests to run. Should at least one of the follow: an ansible-playbooks directory containing one or more test directories each of which having a playbook.yml, a scripts directory containing one or more test directories each of which having a run-test.sh',
           name: 'TEST_DIR'
         ),
+        [$class: 'ValidatingStringParameterDefinition',
+         defaultValue: 'basic-smoke-test',
+         description: 'Parameter describing which of the system-roles tests to run. Valid values are=["basic-smoke-test", "Upstream-testsuite", "Multiarch-testsuite"]',
+         failedValidationMessage: 'Invalid test name. Valid values are ["basic-smoke-test", "Upstream-testsuite", "Multiarch-testsuite"].',
+         name: 'TEST_TYPE',
+         regex: '^(basic-smoke-test|Upstream-testsuite|Multiarch-testsuite){1}$'
+        ],
         string(
           defaultValue: '',
           description: 'Contains the CI_MESSAGE for a message bus triggered build.',
@@ -141,8 +148,8 @@ String distro = ''
 String variant = ''
 
 final Map<String,List<String>> SUPPORTED_ARCHES = [
-    (RHEL7): [X86_64, PPC64LE],
-    (RHEL8): [X86_64, PPC64LE, AARCH64, S390X]
+  (RHEL7): [X86_64, PPC64LE],
+  (RHEL8): [X86_64, PPC64LE, AARCH64, S390X]
 ]
 
 // Lookup the build information
@@ -184,15 +191,15 @@ MAQEAPI.v1.testWrapper(this, config) {
 
     // Ensure arch is supported for
     if (params.ARCHES == 'all') {
-        arches = SUPPORTED_ARCHES[os]
+      arches = SUPPORTED_ARCHES[os]
     } else {
-        arches = params.ARCHES.tokenize(',')
-        for (arch in arches) {
-            arch = arch.trim()
-            if (!SUPPORTED_ARCHES[os].contains(arch)) {
-                error("Invalid arch specification. Architecture $arch is not supported on $os")
-            }
+      arches = params.ARCHES.tokenize(',')
+      for (arch in arches) {
+        arch = arch.trim()
+        if (!SUPPORTED_ARCHES[os].contains(arch)) {
+          error("Invalid arch specification. Architecture $arch is not supported on $os")
         }
+      }
     }
 
     // Variant
@@ -210,34 +217,36 @@ for (String arch in arches) {
   targetHost.arch = arch
   targetHost.distro = distro
   targetHost.variant = variant
-  targetHost.scriptParams = (os == RHEL8) ? params.RHEL8_SYSTEM_ROLES_OVERRIDE : params.RHEL7_SYSTEM_ROLES_OVERRIDE
+  targetHost.scriptParams = "$params.TEST_TYPE ${(os == RHEL8) ? params.RHEL8_SYSTEM_ROLES_OVERRIDE : params.RHEL7_SYSTEM_ROLES_OVERRIDE}"
   targetHost.inventoryVars = [
     ansible_ssh_private_key_file:'/home/jenkins/.ssh/id_rsa',
     ansible_ssh_common_args:'"-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"',
   ]
   if (os == RHEL8) {
-      targetHost.inventoryVars << [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
+    targetHost.inventoryVars << [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
   }
 
-  // Ensure there is enough memory to run KVM
-  // targetHost.bkrHostRequires = [[ tag: 'memory', op: '>=', value: '8192', type:'system' ]]
+  if (params.TEST_TYPE == 'Upstream-testsuite') {
+    // Ensure there is enough memory to run KVM
+    targetHost.bkrHostRequires = [[ tag: 'memory', op: '>=', value: '8192', type:'system' ]]
 
-  // Ensure x86_64 hosts support virtualization
-  // if (targetHost.arch == X86_64) {
-  //    targetHost.bkrKeyValue = [ 'HVM==1' ]
-  //}
+    // Ensure x86_64 hosts support virtualization
+    if (targetHost.arch == X86_64) {
+      targetHost.bkrKeyValue = [ 'HVM==1' ]
+    }
 
-  // Ensure power machine is baremetal or running powerVM
-  //if (targetHost.arch == PPC64LE) {
-  //  if (params.FORCE_BAREMETAL_POWER_SYSTEM) {
-  //    targetHost.bkrHostRequires.add([tag:'hypervisor', op:'==', value:''])
-  //  } else {
-  //    targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
+    // Ensure power machine is baremetal or running powerVM
+    if (targetHost.arch == PPC64LE) {
+      if (params.FORCE_BAREMETAL_POWER_SYSTEM) {
+        targetHost.bkrHostRequires.add([tag:'hypervisor', op:'==', value:''])
+      } else {
+        targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
 
-  //    // Disable radix on power because KVM will not work with PR type acceleration on Power 9 and PowerVM LPARs do not support HV
-  //    targetHost.bkrKernelOptionsPost = 'disable_radix'
-  //  }
-  //}
+        // Disable radix on power because KVM will not work with PR type acceleration on Power 9 and PowerVM LPARs do not support HV
+        targetHost.bkrKernelOptionsPost = 'disable_radix'
+      }
+    }
+  }
 
   targetHosts.push(targetHost)
 }
