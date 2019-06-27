@@ -1,6 +1,6 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#   Makefile of /Ansible-Engine/Multiarch-testsuite
+#   Makefile of /CoreOS/rhel-system-roles/Sanity/Multiarch-testsuite
 #   Description: Test executes upstream testsuite
 #   Author: Jeremy Poulin <jpoulin@redhat.com>
 #
@@ -23,7 +23,7 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-export TEST=/Ansible-Engine/Multiarch-testsuite
+export TEST=/CoreOS/rhel-system-roles/Sanity/Multiarch-testsuite
 export TESTVERSION=1.0
 
 BUILT_FILES=

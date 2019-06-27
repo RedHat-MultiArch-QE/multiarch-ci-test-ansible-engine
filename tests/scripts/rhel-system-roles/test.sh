@@ -6,6 +6,12 @@
 workdir="$(dirname $(readlink -f ${BASH_SOURCE[0]}))"
 pushd $workdir
 
+# Determine the test type
+test_type=$1
+BASIC_SMOKE="basic-smoke-test"
+MULTIARCH_TESTSUITE="Multiarch-testsuite"
+UPSTREAM_TESTSUITE="Upstream-testsuite"
+
 # Get OS information
 . /etc/os-release
 OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
@@ -45,10 +51,11 @@ sudo yum install -y wget qemu-kvm genisoimage \
     ansible \
     rhel-system-roles \
     koji brewkoji \
-    beakerlib beakerlib-redhat restraint-rhts
+    beakerlib beakerlib-redhat
+# restraint-rhts
 
 # Override system roles if requested
-RHEL_SYSTEM_ROLES_OVERRIDE=$1
+RHEL_SYSTEM_ROLES_OVERRIDE=$2
 if [ -n "$RHEL_SYSTEM_ROLES_OVERRIDE" ]; then
     brew download-build --rpm "$RHEL_SYSTEM_ROLES_OVERRIDE"
 fi
@@ -59,8 +66,10 @@ if [ "$OS_MAJOR_VERSION" == "8" ]; then
     sudo yum install -y python3-lxml
 
     # Install brew for additional dependencies
-    # brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
-    # brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+    if [ "$test_type" == "$UPSTREAM_TESTSUITE" ]; then
+        brew download-build --rpm fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+        brew download-build --rpm python3-fmf-0.6-1.module+el8+2902+97ffd857.noarch.rpm
+    fi
     brew download-build --rpm beakerlib-1.18-6.el8bkr.noarch.rpm
     brew download-build --rpm beakerlib-vim-syntax-1.18-6.el8bkr.noarch.rpm
 fi
@@ -68,20 +77,21 @@ fi
 # Install downloaded rpms
 ls *.rpm && sudo yum --nogpgcheck localinstall -y *.rpm
 
-# Install dependencies covered by brew
-sudo yum install -y rhpkg
-
 # Set the ansible config
 sudo cp ansible.cfg /etc/ansible/ansible.cfg
 
-# Clone test
-# rhpkg --verbose --user=jenkins clone tests/rhel-system-roles || git clone ssh://jenkins@pkgs.devel.redhat.com/tests/rhel-system-roles
-# cd rhel-system-roles
-# git checkout private-upstream_testsuite_refactor
-# cd Sanity/Upstream-testsuite
+if [ "$test_type" != "$MULTIARCH_TESTSUITE" ]; then
+    # Clone test
+    rhpkg --verbose --user=jenkins clone tests/rhel-system-roles || git clone ssh://jenkins@pkgs.devel.redhat.com/tests/rhel-system-roles
+    cd rhel-system-roles
+    git checkout master
+    cd "Sanity/$test_type"
+fi
 
-# Update the RAM for the VM to 4096
-# sed -ie s/2048/4096/ provision.fmf
+if [ "$test_type" == "$UPSTREM-TESTSUITE" ]; then
+    # Update the RAM for the VM to 4096
+    sed -ie s/2048/4096/ provision.fmf
+fi
 
 # Define output
 output_dir="$workdir/artifacts/$(arch)"
