@@ -2,7 +2,7 @@
 # vim: dict+=/usr/share/beakerlib/dictionary.vim cpt=.,w,b,u,t,i,k
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#   runtest.sh of /Ansible-Engine/Multiarch-testsuite
+#   runtest.sh of /CoreOS/rhel-system-roles/Sanity/Multiarch-testsuite
 #   Description: Test executes upstream testsuite
 #   Author: Jeremy Poulin <jpoulin@redhat.com>
 #
