@@ -88,7 +88,7 @@ if [ "$test_type" != "$MULTIARCH_TESTSUITE" ]; then
     cd "Sanity/$test_type"
 fi
 
-if [ "$test_type" == "$UPSTREM_TESTSUITE" ]; then
+if [ "$test_type" == "$UPSTREAM_TESTSUITE" ]; then
     # Update the RAM for the VM to 4096
     sed -ie s/2048/4096/ provision.fmf
 fi
