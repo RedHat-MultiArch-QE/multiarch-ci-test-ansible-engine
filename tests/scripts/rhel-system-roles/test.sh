@@ -12,6 +12,12 @@ BASIC_SMOKE="basic-smoke-test"
 MULTIARCH_TESTSUITE="Multiarch-testsuite"
 UPSTREAM_TESTSUITE="Upstream-testsuite"
 
+# Pick which branch to checkout
+TEST_BRANCH="master"
+if [ "$test_type" == $UPSTREAM_TESTSUITE ]; then
+    TEST_BRANCH="private-upstream_testsuite_refactor"
+fi
+
 # Get OS information
 . /etc/os-release
 OS_MAJOR_VERSION=$(echo $VERSION_ID | cut -d '.' -f 1)
@@ -84,7 +90,7 @@ if [ "$test_type" != "$MULTIARCH_TESTSUITE" ]; then
     # Clone test
     rhpkg --verbose --user=jenkins clone tests/rhel-system-roles || git clone ssh://jenkins@pkgs.devel.redhat.com/tests/rhel-system-roles
     cd rhel-system-roles
-    git checkout master
+    git checkout $TEST_BRANCH
     cd "Sanity/$test_type"
 fi
 
