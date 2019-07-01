@@ -132,6 +132,9 @@ AARCH64 = 'aarch64'
 S390X = 's390x'
 RHEL7 = 'rhel-7'
 RHEL8 = 'rhel-8'
+UPSTREAM_TESTSUITE = 'Upstream-testsuite'
+MULTIARCH_TESTSUITE = 'Multiarch-testsuite'
+BASIC_SMOKE_TEST = 'basic-smoke-test'
 
 // MACIT configuration
 def errorMessages = ''
@@ -139,9 +142,6 @@ def config = MAQEAPI.v1.getProvisioningConfig(this)
 config.installRhpkg = true
 config.jobgroup = 'multiarch-qe'
 config.teardown = params.TEARDOWN
-
-// Ensure workspace is grabbed from test repo
-config.provisioningRepoUrl = null
 
 // Get build information
 Map message = [:]
@@ -153,6 +153,11 @@ List arches = []
 String os = ''
 String distro = ''
 String variant = ''
+
+// Selected parameter set
+String systemRolesOverride = ''
+String testType = ''
+String emailSubscribers = ''
 
 final Map<String,List<String>> SUPPORTED_ARCHES = [
   (RHEL7): [X86_64, PPC64LE],
@@ -190,13 +195,7 @@ MAQEAPI.v1.testWrapper(this, config) {
       error("Invalid OS version: ${os}.")
     }
 
-    // Distro
-    distro = (os == RHEL8) ? params.RHEL8_DISTRO : params.RHEL7_DISTRO
-    if (!distro) {
-      error("Invalid distro: ${distro}.")
-    }
-
-    // Ensure arch is supported for
+    // Ensure arch is supported for os
     if (params.ARCHES == 'all') {
       arches = SUPPORTED_ARCHES[os]
     } else {
@@ -208,13 +207,32 @@ MAQEAPI.v1.testWrapper(this, config) {
         }
       }
     }
-
-    // Variant
-    variant = (os == RHEL8) ? 'BaseOS' : 'Server'
-    if (!variant) {
-      error("Invalid variant: ${variant}.")
-    }
   }
+}
+
+// Select parameter set based on OS
+if (os == RHEL8) {
+  distro = params.RHEL8_DISTRO
+  variant = 'BaseOS'
+  systemRolesOverride = params.RHEL8_SYSTEM_ROLES_OVERRIDE
+  testType = params.RHEL8_TEST_TYPE
+  emailSubscribers = params.RHEL8_EMAIL_SUBSCRIBERS
+} else {
+  distro = params.RHEL7_DISTRO
+  variant = 'Server'
+  systemRolesOverride = params.RHEL7_SYSTEM_ROLES_OVERRIDE
+  testType = params.RHEL7_TEST_TYPE
+  emailSubscribers = params.RHEL7_EMAIL_SUBSCRIBERS
+}
+
+// Ensure distro cannot be null
+if (!distro) {
+   error("Distro for selected os ($os) cannot be null.")
+}
+
+// Ensure workspace is grabbed from test repo when we need beaker multi-resource
+if (testType == MULTIARCH_TESTSUITE) {
+  config.provisioningRepoUrl = null
 }
 
 def targetHosts = []
@@ -224,9 +242,7 @@ for (String arch in arches) {
   targetHost.arch = arch
   targetHost.distro = distro
   targetHost.variant = variant
-  targetHost.scriptParams = (os == RHEL8) ?
-    "$params.RHEL8_TEST_TYPE $params.RHEL8_SYSTEM_ROLES_OVERRIDE" :
-    "$params.RHEL7_TEST_TYPE $params.RHEL7_SYSTEM_ROLES_OVERRIDE"
+  targetHost.scriptParams = "$testType $systemRolesOverride"
   targetHost.inventoryVars = [
     ansible_ssh_private_key_file:'/home/jenkins/.ssh/id_rsa',
     ansible_ssh_common_args:'"-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"',
@@ -246,7 +262,7 @@ for (String arch in arches) {
 
     // Ensure power machine is baremetal or running powerVM
     if (targetHost.arch == PPC64LE) {
-      if (params.FORCE_BAREMETAL_POWER_SYSTEM) {
+      if (params.FORCE_BAREMETAL_POWER_SYSTEM && testType == UPSTREAM_TESTSUITE) {
         targetHost.bkrHostRequires.add([tag:'hypervisor', op:'==', value:''])
       } else {
         targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
@@ -305,7 +321,7 @@ MAQEAPI.v1.runTest(
       body: emailBody,
       from: 'multiarch-qe-jenkins',
       replyTo: 'multiarch-qe',
-      to: "${os == RHEL8 ? params.RHEL8_EMAIL_SUBSCRIBERS : params.RHEL7_EMAIL_SUBSCRIBERS}",
+      to: "$emailSubscribers",
       attachmentsPattern: 'artifacts/tests/scripts/rhel-system-roles/artifacts/**/*.*'
     )
   }
