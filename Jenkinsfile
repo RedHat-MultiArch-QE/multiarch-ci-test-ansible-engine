@@ -50,13 +50,6 @@ properties(
           description: 'Directory containing tests to run. Should at least one of the follow: an ansible-playbooks directory containing one or more test directories each of which having a playbook.yml, a scripts directory containing one or more test directories each of which having a run-test.sh',
           name: 'TEST_DIR'
         ),
-        [$class: 'ValidatingStringParameterDefinition',
-         defaultValue: 'basic-smoke-test',
-         description: 'Parameter describing which of the system-roles tests to run. Valid values are=["basic-smoke-test", "Upstream-testsuite", "Multiarch-testsuite"]',
-         failedValidationMessage: 'Invalid test name. Valid values are ["basic-smoke-test", "Upstream-testsuite", "Multiarch-testsuite"].',
-         name: 'TEST_TYPE',
-         regex: '^(basic-smoke-test|Upstream-testsuite|Multiarch-testsuite){1}$'
-        ],
         string(
           defaultValue: '',
           description: 'Contains the CI_MESSAGE for a message bus triggered build.',
@@ -87,6 +80,20 @@ properties(
           description: 'Optional override to get the rhel-system-roles package from brew for RHEL 8.',
           name: 'RHEL8_SYSTEM_ROLES_OVERRIDE'
         ),
+        [$class: 'ValidatingStringParameterDefinition',
+         defaultValue: 'Upstream-testsuite',
+         description: 'Parameter describing which of the system-roles tests to run on RHEL 7. Valid values are=["basic-smoke-test", "Upstream-testsuite", "Multiarch-testsuite"]',
+         failedValidationMessage: 'Invalid test name. Valid values are ["basic-smoke-test", "Upstream-testsuite", "Multiarch-testsuite"].',
+         name: 'RHEL7_TEST_TYPE',
+         regex: '^(basic-smoke-test|Upstream-testsuite|Multiarch-testsuite){1}$'
+        ],
+        [$class: 'ValidatingStringParameterDefinition',
+         defaultValue: 'basic-smoke-test',
+         description: 'Parameter describing which of the system-roles tests to run on RHEL 8. Valid values are=["basic-smoke-test", "Upstream-testsuite", "Multiarch-testsuite"]',
+         failedValidationMessage: 'Invalid test name. Valid values are ["basic-smoke-test", "Upstream-testsuite", "Multiarch-testsuite"].',
+         name: 'RHEL8_TEST_TYPE',
+         regex: '^(basic-smoke-test|Upstream-testsuite|Multiarch-testsuite){1}$'
+        ],
         string(
           defaultValue: 'jpoulin', //; mclay; djez; pcahyna',
           description: 'Semi-colon delimited list of email notification recipients.',
@@ -217,7 +224,9 @@ for (String arch in arches) {
   targetHost.arch = arch
   targetHost.distro = distro
   targetHost.variant = variant
-  targetHost.scriptParams = "$params.TEST_TYPE ${(os == RHEL8) ? params.RHEL8_SYSTEM_ROLES_OVERRIDE : params.RHEL7_SYSTEM_ROLES_OVERRIDE}"
+  targetHost.scriptParams = (os == RHEL8) ?
+    "$params.RHEL8_TEST_TYPE $params.RHEL8_SYSTEM_ROLES_OVERRIDE" :
+    "$params.RHEL7_TEST_TYPE $params.RHEL7_SYSTEM_ROLES_OVERRIDE"
   targetHost.inventoryVars = [
     ansible_ssh_private_key_file:'/home/jenkins/.ssh/id_rsa',
     ansible_ssh_common_args:'"-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"',
