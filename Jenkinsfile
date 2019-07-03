@@ -9,7 +9,7 @@ properties(
             [
             $class: 'ActiveMQSubscriberProviderData',
             name: 'Red Hat UMB',
-            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.362b4d33-54cc-4d94-84af-ad1732e30928.VirtualTopic.eng.brew.>'],
+            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.373aa6f4-d6b5-4f20-a4d5-557cee12777b.VirtualTopic.eng.brew.>'],
             selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\'',
             timeout: null
           ]
@@ -26,12 +26,12 @@ properties(
          regex: '^((all){1}|(?:x86_64|ppc64le|aarch64|s390x)(?:,\\s*(?:x86_64|ppc64le|aarch64|s390x))*)$'
         ],
         string(
-          defaultValue: 'https://github.com/jaypoulz/multiarch-ci-libraries',
+          defaultValue: 'https://github.com/redhat-multiarch-qe/multiarch-ci-libraries',
           description: 'Repo for shared libraries.',
           name: 'LIBRARIES_REPO'
         ),
         string(
-          defaultValue: 'dev-v2.0.0',
+          defaultValue: 'v1.3.0',
           description: 'Git reference to the branch or tag of shared libraries.',
           name: 'LIBRARIES_REF'
         ),
@@ -95,12 +95,12 @@ properties(
          regex: '^(basic-smoke-test|Upstream-testsuite|Multiarch-testsuite){1}$'
         ],
         string(
-          defaultValue: 'jpoulin', //; mclay; djez; pcahyna',
+          defaultValue: 'jpoulin; mclay; djez; pcahyna',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'RHEL7_EMAIL_SUBSCRIBERS'
         ),
         string(
-          defaultValue: 'jpoulin', //; mclay; djez; pcahyna',
+          defaultValue: 'jpoulin; mclay; djez; pcahyna',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'RHEL8_EMAIL_SUBSCRIBERS'
         ),
@@ -262,7 +262,7 @@ for (String arch in arches) {
 
     // Ensure power machine is baremetal or running powerVM
     if (targetHost.arch == PPC64LE) {
-      if (params.FORCE_BAREMETAL_POWER_SYSTEM && testType == UPSTREAM_TESTSUITE) {
+      if (params.FORCE_BAREMETAL_POWER_SYSTEM || testType == UPSTREAM_TESTSUITE) {
         targetHost.bkrHostRequires.add([tag:'hypervisor', op:'==', value:''])
       } else {
         targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
