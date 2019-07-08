@@ -105,7 +105,7 @@ properties(
           name: 'RHEL8_EMAIL_SUBSCRIBERS'
         ),
         booleanParam(
-          defaultValue: false,
+          defaultValue: true,
           description: 'Force a ppc64le build to request a baremetal system.',
           name: 'FORCE_BAREMETAL_POWER_SYSTEM'
         ),
@@ -251,7 +251,7 @@ for (String arch in arches) {
     targetHost.inventoryVars << [ ansible_python_interpreter:'/usr/libexec/platform-python' ]
   }
 
-  if (params.TEST_TYPE == 'Upstream-testsuite') {
+  if (testType == UPSTREAM_TESTSUITE) {
     // Ensure there is enough memory to run KVM
     targetHost.bkrHostRequires = [[ tag: 'memory', op: '>=', value: '8192', type:'system' ]]
 
@@ -262,7 +262,7 @@ for (String arch in arches) {
 
     // Ensure power machine is baremetal or running powerVM
     if (targetHost.arch == PPC64LE) {
-      if (params.FORCE_BAREMETAL_POWER_SYSTEM || testType == UPSTREAM_TESTSUITE) {
+      if (params.FORCE_BAREMETAL_POWER_SYSTEM) {
         targetHost.bkrHostRequires.add([tag:'hypervisor', op:'==', value:''])
       } else {
         targetHost.bkrHostRequires.add([ rawxml: '<system><or><hypervisor op="==" value=""/><hypervisor op="==" value="PowerVM"/></or></system>' ])
