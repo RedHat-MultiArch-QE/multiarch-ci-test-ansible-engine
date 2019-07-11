@@ -303,7 +303,11 @@ MAQEAPI.v1.runTest(
   { Exception exception, def host ->
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
-    currentBuild.result = 'FAILURE'
+    if (os == RHEL7 && exception.message.contains('script returned exit code 2')) {
+      currentBuild.result = 'UNSTABLE'
+    } else {
+      currentBuild.result = 'FAILURE'
+    }
   },
   {
     try {
