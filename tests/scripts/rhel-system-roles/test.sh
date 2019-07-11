@@ -97,6 +97,9 @@ fi
 if [ "$test_type" == "$UPSTREAM_TESTSUITE" ]; then
     # Update the RAM for the VM to 4096
     sed -ie s/2048/4096/ provision.fmf
+
+    # Update reboot timeout for all_transistions
+    # sed -ie "s/timeout: 300/timeout: 3600/" /usr/share/ansible/roles/rhel-system-roles.selinux/tests/selinux_apply_reboot.yml
 fi
 
 # Define output
@@ -108,7 +111,8 @@ mkdir -p $output_dir
 sudo make &> $output_file run
 
 # Ensure Success and Restore Directory
-grep "OVERALL RESULT" $output_file | grep "PASS"
+grep "OVERALL RESULT" $output_file | grep "PASS" ||
+    . $workdir/validate.sh; test_success $output_file $workdir/ignore-failures.txt
 test_status=$?
 
 # Copy ansible logs from tmp

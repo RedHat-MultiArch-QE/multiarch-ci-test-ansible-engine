@@ -9,7 +9,7 @@ properties(
             [
             $class: 'ActiveMQSubscriberProviderData',
             name: 'Red Hat UMB',
-            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.373aa6f4-d6b5-4f20-a4d5-557cee12777b.VirtualTopic.eng.brew.>'],
+            overrides: [topic: 'Consumer.rh-jenkins-ci-plugin.20a11492-54d6-4843-8894-24bd09c30048.VirtualTopic.eng.brew.>'],
             selector: 'name = \'ansible\' AND type = \'Tag\' AND tag LIKE \'ansible-%-rhel-%-candidate\'',
             timeout: null
           ]
@@ -303,7 +303,7 @@ MAQEAPI.v1.runTest(
   { Exception exception, def host ->
     def error = "Exception ${exception} occured on ${host.arch}\n"
     errorMessages += error
-    if (os == RHEL7 && exception.message.contains('script returned exit code 2')) {
+    if (exception.message.contains('script returned exit code')) {
       currentBuild.result = 'UNSTABLE'
     } else {
       currentBuild.result = 'FAILURE'

@@ -1,0 +1,4 @@
+qemu-kvm
+timesync/tests_ptp_multi.yml
+timesync/tests_ptp_single.yml
+selinux/tests_all_transitions.yml
