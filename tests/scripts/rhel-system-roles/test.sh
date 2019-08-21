@@ -112,7 +112,7 @@ sudo make &> $output_file run
 
 # Ensure Success and Restore Directory
 grep "OVERALL RESULT" $output_file | grep "PASS" ||
-    . $workdir/validate.sh; test_success $output_file $workdir/ignore-failures.txt
+    . $workdir/validate.sh && test_success $output_file $workdir/ignore-failures.txt
 test_status=$?
 
 # Copy ansible logs from tmp
