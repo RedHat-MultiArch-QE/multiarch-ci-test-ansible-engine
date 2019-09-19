@@ -95,12 +95,12 @@ properties(
          regex: '^(basic-smoke-test|Upstream-testsuite|Multiarch-testsuite){1}$'
         ],
         string(
-          defaultValue: 'jpoulin; mclay; djez; pcahyna',
+          defaultValue: 'jpoulin; mclay; djez',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'RHEL7_EMAIL_SUBSCRIBERS'
         ),
         string(
-          defaultValue: 'jpoulin; mclay; djez; pcahyna',
+          defaultValue: 'jpoulin; mclay; djez',
           description: 'Semi-colon delimited list of email notification recipients.',
           name: 'RHEL8_EMAIL_SUBSCRIBERS'
         ),
